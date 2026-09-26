@@ -222,7 +222,6 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
                     <td style={{ fontWeight: 600 }}>{c.name || "Untitled client"}</td>
                     <td>
                       <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
-                        <span className="stage-pill-dot" />
                         {c.churned ? "Churned" : c.stage}
                       </span>
                     </td>

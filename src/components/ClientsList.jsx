@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
-import { STAGE_COLORS } from "../lib/constants";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
 
 function stageDuration(c) {
@@ -109,7 +108,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
                 <tr key={c.id} onClick={() => onSelect(c.id)}>
                   <td style={{ fontWeight: 600 }}>{c.name || "Untitled client"}</td>
                   <td>
-                    <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage} style={{ background: c.churned ? STAGE_COLORS.Churned : STAGE_COLORS[c.stage] }}>
+                    <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
                       {c.churned ? "Churned" : c.stage}
                     </span>
                   </td>

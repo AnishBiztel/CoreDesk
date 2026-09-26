@@ -49,18 +49,19 @@ export default function Sidebar({
           return (
             <div key={c.id} className={"client-item" + (c.id === selectedId ? " active" : "")} onClick={() => onSelect(c.id)}>
               <div className="client-item-name">
-                <span className="priority-dot" style={{ background: PRIORITY_COLORS[c.priority || "Medium"] }} aria-label={(c.priority || "Medium") + " priority"} />
-                {c.name || "Untitled client"}
-              </div>
-              <div className="client-item-meta">
+                <span className="client-item-name-left">
+                  <span className="priority-dot" style={{ background: PRIORITY_COLORS[c.priority || "Medium"] }} aria-label={(c.priority || "Medium") + " priority"} />
+                  {c.name || "Untitled client"}
+                </span>
                 <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
-                  <span className="stage-pill-dot" />
                   {c.churned ? "Churned" : c.stage}
                 </span>
-                {c.issues.filter((i) => !i.resolved).length > 0 && (
-                  <span className="mono" style={{ fontSize: 11, color: "var(--red)" }}>{c.issues.filter((i) => !i.resolved).length} open</span>
-                )}
               </div>
+              {c.issues.filter((i) => !i.resolved).length > 0 && (
+                <div className="client-item-meta">
+                  <span className="mono" style={{ fontSize: 11, color: "var(--red)" }}>{c.issues.filter((i) => !i.resolved).length} open</span>
+                </div>
+              )}
               <div className="client-item-sub">
                 <span>{timeAgo(c.updatedAt)} · GTD {gtdDone}/{gtdTotal}</span>
                 {stuck && <span className="stuck-flag">stuck</span>}
