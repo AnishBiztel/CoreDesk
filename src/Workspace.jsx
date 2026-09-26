@@ -12,6 +12,7 @@ import { useConfirm } from "./components/ConfirmDialog";
 import { SidebarSkeleton, DashboardSkeleton } from "./components/Skeleton";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
+import ClientsList from "./components/ClientsList";
 import ClientDetail from "./components/ClientDetail";
 import TrashPanel from "./components/TrashPanel";
 import ProductWorkspace from "./components/product/ProductWorkspace";
@@ -307,6 +308,10 @@ export default function Workspace({ session, profile, onOpenSettings }) {
       setProductInitialTab("hardware");
       setMainView("product");
       setSelectedId(null);
+    } else if (tabKey === "clients") {
+      setMainView("clientsList");
+      setSelectedId(null);
+      if (searchText) setQuery(searchText);
     } else {
       setMainView("dashboard");
       setSelectedId(null);
@@ -353,14 +358,10 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           {mainView === "trash" && <TrashPanel isAdmin={isAdmin} onChanged={loadClients} />}
           {mainView === "product" && <ProductWorkspace key={productInitialTab} session={session} initialTab={productInitialTab} />}
           {mainView === "dashboard" && (
-            <Dashboard
-              key={topNavTab}
-              allClients={clients}
-              filtered={filtered}
-              onSelect={selectClient}
-              onAddClient={addClient}
-              initialView={topNavTab === "clients" ? "table" : "kanban"}
-            />
+            <Dashboard allClients={clients} filtered={filtered} onSelect={selectClient} onAddClient={addClient} />
+          )}
+          {mainView === "clientsList" && (
+            <ClientsList filtered={filtered} onSelect={selectClient} onAddClient={addClient} />
           )}
           {mainView === "client" && selected && (
             <ClientDetail
@@ -390,7 +391,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           )}
         </div>
 
-        {(mainView === "dashboard" || mainView === "client") && (
+        {(mainView === "dashboard" || mainView === "clientsList" || mainView === "client") && (
           <RightRail allClients={clients} />
         )}
       </div>

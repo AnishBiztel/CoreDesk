@@ -1,5 +1,5 @@
 import { Search, Download, Upload, Trash2, Settings as SettingsIcon, LogOut } from "lucide-react";
-import { STAGES, STAGE_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
+import { STAGES, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { timeAgo, isOverdue, daysSince } from "../lib/helpers";
 
 export default function Sidebar({
@@ -53,7 +53,10 @@ export default function Sidebar({
                 {c.name || "Untitled client"}
               </div>
               <div className="client-item-meta">
-                <span className="stage-pill" style={{ background: c.churned ? STAGE_COLORS.Churned : STAGE_COLORS[c.stage] }}>{c.churned ? "Churned" : c.stage}</span>
+                <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
+                  <span className="stage-pill-dot" />
+                  {c.churned ? "Churned" : c.stage}
+                </span>
                 {c.issues.filter((i) => !i.resolved).length > 0 && (
                   <span className="mono" style={{ fontSize: 11, color: "var(--red)" }}>{c.issues.filter((i) => !i.resolved).length} open</span>
                 )}
