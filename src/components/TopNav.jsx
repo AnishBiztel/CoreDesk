@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import Logo from "./Logo";
-import { LayoutGrid, Users, Map, Cpu, Plus } from "lucide-react";
+import { LayoutGrid, Users, Map, Cpu, Plus, CalendarDays } from "lucide-react";
 import { initials } from "../lib/helpers";
 
 const TABS = [
   { key: "overview", label: "Overview", icon: LayoutGrid },
   { key: "clients", label: "Clients", icon: Users },
   { key: "roadmap", label: "Roadmap", icon: Map },
+  { key: "schedule", label: "Schedule", icon: CalendarDays },
   { key: "hardware", label: "Hardware / BOM", icon: Cpu },
 ];
 

@@ -13,6 +13,7 @@ import { SidebarSkeleton, DashboardSkeleton } from "./components/Skeleton";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import ClientsList from "./components/ClientsList";
+import SchedulePanel from "./components/schedule/SchedulePanel";
 import ClientDetail from "./components/ClientDetail";
 import TrashPanel from "./components/TrashPanel";
 import ProductWorkspace from "./components/product/ProductWorkspace";
@@ -309,6 +310,9 @@ export default function Workspace({ session, profile, onOpenSettings }) {
       setProductInitialTab("hardware");
       setMainView("product");
       setSelectedId(null);
+    } else if (tabKey === "schedule") {
+      setMainView("schedule");
+      setSelectedId(null);
     } else if (tabKey === "clients") {
       setMainView("clientsList");
       setSelectedId(null);
@@ -331,7 +335,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
         onNewClient={addClient}
       />
       <div className="app-shell app-shell-no-navrail">
-        {mainView !== "trash" && mainView !== "product" && (
+        {mainView !== "trash" && mainView !== "product" && mainView !== "schedule" && (
           <Sidebar
             filtered={filtered}
             selectedId={selectedId}
@@ -360,6 +364,9 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           {mainView === "product" && <ProductWorkspace key={productInitialTab} session={session} initialTab={productInitialTab} />}
           {mainView === "dashboard" && (
             <Dashboard allClients={clients} filtered={filtered} onSelect={selectClient} onAddClient={addClient} />
+          )}
+          {mainView === "schedule" && (
+            <SchedulePanel clients={clients} session={session} onOpenClient={(id) => { setTopNavTab("clients"); selectClient(id); }} />
           )}
           {mainView === "clientsList" && (
             <ClientsList filtered={filtered} onSelect={selectClient} onAddClient={addClient} />
