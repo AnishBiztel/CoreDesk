@@ -1176,3 +1176,6 @@ button, input, textarea, select { transition: border-color .18s ease, background
   background: #F8FAFC;
   box-shadow: none;
 }
+
+/* Brand logo (SVG carries its own tile) */
+.brand-logo { display: block; flex-shrink: 0; border-radius: 22%; }

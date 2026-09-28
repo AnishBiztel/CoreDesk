@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Logo from "./components/Logo";
 import { supabase } from "./supabaseClient";
 import { WORK_DOMAIN } from "./lib/constants";
 
@@ -32,7 +33,7 @@ export default function AuthScreen() {
     <div className="auth-screen">
       <div className="auth-card">
         <div className="auth-brand">
-          <span className="auth-logo">CD</span>
+          <Logo size={36} />
           CoreDesk
         </div>
         <div className="auth-sub">Sign in with your team account</div>

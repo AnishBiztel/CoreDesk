@@ -17,6 +17,7 @@ import ClientDetail from "./components/ClientDetail";
 import TrashPanel from "./components/TrashPanel";
 import ProductWorkspace from "./components/product/ProductWorkspace";
 import TopNav from "./components/TopNav";
+import Logo from "./components/Logo";
 import RightRail from "./components/RightRail";
 
 export default function Workspace({ session, profile, onOpenSettings }) {
@@ -67,7 +68,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
     return (
       <div className="app-shell">
         <div className="navrail">
-          <div className="navrail-logo">CD</div>
+          <Logo size={32} />
         </div>
         <div className="sidebar">
           <SidebarSkeleton />

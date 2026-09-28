@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Logo from "./Logo";
 import { LayoutGrid, Users, Map, Cpu, Plus } from "lucide-react";
 import { initials } from "../lib/helpers";
 
@@ -28,7 +29,7 @@ export default function TopNav({ activeTab, onNavigate, userEmail, onOpenSetting
   return (
     <header className="topnav">
       <div className="topnav-brand">
-        <span className="topnav-logo">CD</span>
+        <Logo size={26} />
         <span className="topnav-brand-name">CoreDesk</span>
       </div>
 
