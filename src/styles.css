@@ -229,7 +229,7 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
   background: var(--red-soft);
   border: 1px solid color-mix(in srgb, var(--red) 35%, transparent);
   padding: 2px 7px;
-  border-radius: var(--radius-xs);
+  border-radius: 4px;
   font-weight: 700;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -809,8 +809,8 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .project-status-kicker { display:flex; align-items:center; gap:6px; color:var(--accent); font-size:11px; font-weight:600; letter-spacing:.01em; margin-bottom:5px; }
 .project-status-head h2 { margin:0; font-size:17px; letter-spacing:-.02em; }
 .project-status-head p { margin:5px 0 0; color:var(--muted); font-size:11.5px; }
-.project-status-live { display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius: var(--radius-pill); border:1px solid color-mix(in srgb, var(--green) 30%, transparent); background:color-mix(in srgb, var(--green) 12%, transparent); color:var(--green); font:600 10px var(--mono); }
-.project-status-live span { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 9px color-mix(in srgb, var(--green) 80%, transparent); }
+.project-status-live { display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius: 4px; border:1px solid color-mix(in srgb, var(--green) 30%, transparent); background:color-mix(in srgb, var(--green) 12%, transparent); color:var(--green); font:600 10px var(--mono); }
+.project-status-live span { width:6px; height:6px; border-radius:50%; background:var(--green); }
 .project-status-body { display:grid; grid-template-columns:260px 1fr; gap:26px; align-items:center; }
 .project-status-donut-wrap { display:flex; flex-direction:column; align-items:center; }
 .project-status-donut { width:174px; height:174px; border-radius:50%; display:grid; place-items:center; position:relative; box-shadow:0 0 45px color-mix(in srgb, var(--accent) 35%, transparent); }
@@ -847,7 +847,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .project-status-head-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .project-status-churned-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 9px; border-radius: var(--radius-pill);
+  padding: 4px 9px; border-radius: 4px;
   border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
   background: color-mix(in srgb, var(--red) 10%, transparent);
   color: var(--red); font: 600 10px var(--mono);
@@ -1144,7 +1144,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .sync-state:not(.error) {
   display: inline-flex; align-items: center; gap: 5px;
   background: var(--green-soft); color: var(--green);
-  padding: 2px 8px; border-radius: var(--radius-pill); font-weight: 600;
+  padding: 2px 8px; border-radius: 4px; font-weight: 600;
   text-transform: uppercase; font-size: 10px; letter-spacing: 0.04em;
 }
 .sync-state:not(.error)::before {
@@ -1168,6 +1168,14 @@ button, input, textarea, select { transition: border-color .18s ease, background
 [data-theme="light"] .stage-pill[data-stage="Deployed"] { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
 [data-theme="light"] .stage-pill[data-stage="Live Support"] { background: #E0F7FA; color: #00796B; border-color: #B2EBF2; }
 [data-theme="light"] .stage-pill[data-stage="Churned"] { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+
+/* ---------- Live / Synced / Churned status badges: light theme, same pastel spec ---------- */
+[data-theme="light"] .sync-state:not(.error) { background: #DCFCE7; color: #15803D; }
+[data-theme="light"] .sync-state:not(.error)::before { background: #16A34A; }
+[data-theme="light"] .sync-state.error { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+[data-theme="light"] .project-status-live { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
+[data-theme="light"] .project-status-live span { background: #16A34A; }
+[data-theme="light"] .project-status-churned-badge { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
 
 /* ---------- Selected client card in light theme, per spec ---------- */
 [data-theme="light"] .client-item.active {

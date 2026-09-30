@@ -143,6 +143,7 @@ export default function ClientDetail({
             <div className="section-title">Next action</div>
             <div className="meta-row" style={{ marginTop: 0 }}>
               <div className="meta-field" style={{ flex: 1 }}>
+                <label aria-hidden="true" style={{ visibility: "hidden" }}>Next action</label>
                 <DebouncedField aria-label="Next action" placeholder="e.g. send POC results deck" value={c.nextAction} onCommit={(v) => updateClient(c.id, { nextAction: v })} onKeyDown={handleEnterSave} style={{ minWidth: 280 }} />
               </div>
               <div className="meta-field">
