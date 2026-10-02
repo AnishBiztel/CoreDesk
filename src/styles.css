@@ -1307,3 +1307,30 @@ button, input, textarea, select { transition: border-color .18s ease, background
   .cal-cell { min-height: 84px; }
   .cal-form { grid-template-columns: 1fr; }
 }
+
+/* =========================================================
+   Company grouping (multiple departments/projects per client)
+   ========================================================= */
+.client-group { position: relative; }
+.client-group-single { position: relative; }
+.client-add-dept-single {
+  display: none; align-items: center; gap: 4px;
+  width: 100%; text-align: left; background: none; border: none;
+  font-size: 10.5px; font-weight: 600; color: var(--muted-2);
+  padding: 2px 14px 6px; cursor: pointer; font-family: var(--font);
+}
+.client-group-single:hover .client-add-dept-single { display: inline-flex; }
+.client-add-dept-single:hover { color: var(--accent); }
+
+.client-group-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 14px 4px; margin-top: 4px;
+}
+.client-group-name {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--muted); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.client-group-name:hover { color: var(--ink); }
+.client-group-rename { display: flex; align-items: center; gap: 4px; flex: 1; }
+.client-group-rename .input { padding: 3px 7px; font-size: 11.5px; flex: 1; }
+.client-item-grouped { margin-left: 10px; padding-left: 10px; border-left: 2px solid var(--line); }

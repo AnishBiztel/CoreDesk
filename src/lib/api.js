@@ -14,7 +14,7 @@ export function freshGtd(steps) {
   return list.map((s) => ({ ...s, done: false, note: "", completedAt: "" }));
 }
 
-export function emptyClient(templates) {
+export function emptyClient(templates, companyId, departmentName) {
   const now = new Date().toISOString();
   return {
     id: uid(),
@@ -36,6 +36,8 @@ export function emptyClient(templates) {
     updatedAt: now,
     stageEnteredAt: now,
     deletedAt: null,
+    companyId: companyId || null,
+    departmentName: departmentName || "",
   };
 }
 
@@ -74,6 +76,8 @@ export function fromDb(row) {
     stageEnteredAt: row.stage_entered_at || row.created_at,
     deletedAt: row.deleted_at || null,
     createdBy: row.created_by || null,
+    companyId: row.company_id || null,
+    departmentName: row.department_name || "",
   };
 }
 
@@ -95,6 +99,8 @@ export function toDb(client) {
     gathering: client.gathering,
     stage_entered_at: client.stageEnteredAt,
     updated_at: new Date().toISOString(),
+    company_id: client.companyId || null,
+    department_name: client.departmentName || "",
   };
 }
 
@@ -106,6 +112,8 @@ export function ensureShape(client) {
     overview: client.overview || "",
     gathering: client.gathering && client.gathering.length ? client.gathering : freshGathering(),
     stageEnteredAt: client.stageEnteredAt || client.createdAt || new Date().toISOString(),
+    companyId: client.companyId || null,
+    departmentName: client.departmentName || "",
   };
 }
 

@@ -5,6 +5,7 @@ import {
   fetchClients, insertClient, updateClientRow, softDeleteClient, bulkInsertClients,
   logActivity, emptyClient, emptySpec, ensureShape, fetchWorkspaceSettings,
 } from "./lib/api";
+import { fetchCompanies, insertCompany, renameCompany as renameCompanyRow } from "./lib/companyApi";
 import { initials, uid } from "./lib/helpers";
 import { refreshWhenIdle } from "./lib/editGuard";
 import { useToast } from "./components/Toast";
@@ -16,6 +17,7 @@ import ClientsList from "./components/ClientsList";
 import SchedulePanel from "./components/schedule/SchedulePanel";
 import ClientDetail from "./components/ClientDetail";
 import TrashPanel from "./components/TrashPanel";
+import AddDepartmentModal from "./components/AddDepartmentModal";
 import ProductWorkspace from "./components/product/ProductWorkspace";
 import TopNav from "./components/TopNav";
 import Logo from "./components/Logo";
@@ -23,6 +25,8 @@ import RightRail from "./components/RightRail";
 
 export default function Workspace({ session, profile, onOpenSettings }) {
   const [clients, setClients] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [addDeptFor, setAddDeptFor] = useState(null); // { companyId, companyName } | null
   const [selectedId, setSelectedId] = useState(null);
   const [mainView, setMainView] = useState("dashboard"); // dashboard | client | trash | product
   const [topNavTab, setTopNavTab] = useState("overview");
@@ -46,8 +50,13 @@ export default function Workspace({ session, profile, onOpenSettings }) {
     }
   }
 
+  function loadCompanies() {
+    fetchCompanies().then(setCompanies).catch(() => {}); // table may not exist yet — grouping just stays off
+  }
+
   useEffect(() => {
     loadClients();
+    loadCompanies();
     fetchWorkspaceSettings()
       .then((ws) =>
         setTemplates({
@@ -60,6 +69,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
     const channel = supabase
       .channel("clients-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "clients" }, () => refreshWhenIdle(loadClients))
+      .on("postgres_changes", { event: "*", schema: "public", table: "companies" }, () => refreshWhenIdle(loadCompanies))
       .subscribe();
     return () => supabase.removeChannel(channel);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,6 +93,8 @@ export default function Workspace({ session, profile, onOpenSettings }) {
 
   const selected = clients.find((c) => c.id === selectedId) || null;
 
+  const companiesById = Object.fromEntries(companies.map((co) => [co.id, co]));
+
   const q = query.trim().toLowerCase();
   const filtered = clients
     .filter((c) => {
@@ -92,7 +104,8 @@ export default function Workspace({ session, profile, onOpenSettings }) {
     })
     .filter((c) => {
       if (!q) return true;
-      const inClient = (c.name + " " + c.industry + " " + c.contact).toLowerCase().includes(q);
+      const companyName = companiesById[c.companyId]?.name || "";
+      const inClient = (c.name + " " + c.industry + " " + c.contact + " " + companyName + " " + c.departmentName).toLowerCase().includes(q);
       const inSpecs = c.specs.some((s) => (s.problem + " " + s.constraints).toLowerCase().includes(q));
       const inGathering = (c.gathering || []).some((g) => (g.question + " " + g.answer).toLowerCase().includes(q));
       const inGtd = (c.gtd || []).some((g) => (g.label + " " + g.note).toLowerCase().includes(q));
@@ -141,16 +154,58 @@ export default function Workspace({ session, profile, onOpenSettings }) {
   }
 
   async function addClient() {
-    const c = emptyClient(templates || {});
+    const companyId = uid();
+    const c = emptyClient(templates || {}, companyId, "");
     setClients((cs) => [c, ...cs]);
     selectClient(c.id);
     setSaveState("saving");
     try {
+      await insertCompany(companyId, "");
+      setCompanies((cos) => [...cos, { id: companyId, name: "" }]);
       await insertClient(c, session?.user?.id);
       setSaveState("synced");
       logActivity(c.id, userEmail, "created", "created this client");
     } catch (e) {
       setSaveState("error");
+    }
+  }
+
+  // Opens the "new department" modal for an existing company — used when a client
+  // already has a second project/department (e.g. a new plant at an existing account).
+  function openAddDepartment(companyId, companyName) {
+    setAddDeptFor({ companyId, companyName: companyName || "" });
+  }
+
+  async function submitAddDepartment({ companyName, departmentName, stage }) {
+    const { companyId } = addDeptFor;
+    setAddDeptFor(null);
+    setSaveState("saving");
+    try {
+      if (companyName !== companiesById[companyId]?.name) {
+        await renameCompanyRow(companyId, companyName);
+        setCompanies((cos) => cos.map((co) => (co.id === companyId ? { ...co, name: companyName } : co)));
+      }
+      const c = emptyClient(templates || {}, companyId, departmentName);
+      c.name = companyName;
+      c.stage = stage;
+      setClients((cs) => [c, ...cs]);
+      selectClient(c.id);
+      await insertClient(c, session?.user?.id);
+      setSaveState("synced");
+      logActivity(c.id, userEmail, "created", `created this department under ${companyName}`);
+    } catch (e) {
+      setSaveState("error");
+      toast.error("Couldn't add department", e.message);
+    }
+  }
+
+  async function renameCompany(companyId, name) {
+    setCompanies((cos) => cos.map((co) => (co.id === companyId ? { ...co, name } : co)));
+    try {
+      await renameCompanyRow(companyId, name);
+    } catch (e) {
+      toast.error("Couldn't rename company", e.message);
+      loadCompanies();
     }
   }
 
@@ -281,9 +336,12 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           { title: "Restore backup?", danger: false, confirmLabel: "Restore" }
         );
         if (!ok) return;
-        const shaped = toAdd.map((c) => ({ ...c, id: uid() }));
+        const shaped = toAdd.map((c) => ({ ...c, id: uid(), companyId: c.companyId || uid() }));
         setSaveState("saving");
-        const rows = shaped.map((c) => ({ id: c.id, name: c.name, contact: c.contact, industry: c.industry, stage: c.stage, churned: c.churned, priority: c.priority, overview: c.overview, next_action: c.nextAction, next_action_date: c.nextActionDate || null, last_contact: c.lastContact || null, issues: c.issues, specs: c.specs, gtd: c.gtd, gathering: c.gathering, created_by: session?.user?.id || null, created_at: new Date().toISOString(), stage_entered_at: new Date().toISOString() }));
+        try {
+          await Promise.all(shaped.map((c) => insertCompany(c.companyId, c.name)));
+        } catch { /* best-effort: rows still insert, just ungrouped if this fails */ }
+        const rows = shaped.map((c) => ({ id: c.id, name: c.name, contact: c.contact, industry: c.industry, stage: c.stage, churned: c.churned, priority: c.priority, overview: c.overview, next_action: c.nextAction, next_action_date: c.nextActionDate || null, last_contact: c.lastContact || null, issues: c.issues, specs: c.specs, gtd: c.gtd, gathering: c.gathering, created_by: session?.user?.id || null, created_at: new Date().toISOString(), stage_entered_at: new Date().toISOString(), company_id: c.companyId, department_name: c.departmentName || "" }));
         await bulkInsertClients(rows);
         setSaveState("synced");
         toast.success("Restore complete", `${shaped.length} client(s) added${duplicates.length ? `, ${duplicates.length} skipped as duplicates` : ""}.`);
@@ -338,6 +396,9 @@ export default function Workspace({ session, profile, onOpenSettings }) {
         {mainView !== "trash" && mainView !== "product" && mainView !== "schedule" && (
           <Sidebar
             filtered={filtered}
+            companiesById={companiesById}
+            onAddDepartment={openAddDepartment}
+            onRenameCompany={renameCompany}
             selectedId={selectedId}
             onSelect={selectClient}
             query={query}
@@ -369,7 +430,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
             <SchedulePanel clients={clients} session={session} onOpenClient={(id) => { setTopNavTab("clients"); selectClient(id); }} />
           )}
           {mainView === "clientsList" && (
-            <ClientsList filtered={filtered} onSelect={selectClient} onAddClient={addClient} />
+            <ClientsList filtered={filtered} companiesById={companiesById} onSelect={selectClient} onAddClient={addClient} />
           )}
           {mainView === "client" && selected && (
             <ClientDetail
@@ -403,6 +464,14 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           <RightRail allClients={clients} />
         )}
       </div>
+
+      {addDeptFor && (
+        <AddDepartmentModal
+          companyName={addDeptFor.companyName}
+          onSave={submitAddDepartment}
+          onClose={() => setAddDeptFor(null)}
+        />
+      )}
     </>
   );
 }

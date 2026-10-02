@@ -94,6 +94,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
           <thead>
             <tr>
               <th onClick={() => toggleSort("name")}>Client</th>
+              <th>Department</th>
               <th onClick={() => toggleSort("stage")}>Stage</th>
               <th onClick={() => toggleSort("priority")}>Priority</th>
               <th onClick={() => toggleSort("daysInStage")}>Days in stage</th>
@@ -107,6 +108,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
               return (
                 <tr key={c.id} onClick={() => onSelect(c.id)}>
                   <td style={{ fontWeight: 600 }}>{c.name || "Untitled client"}</td>
+                  <td style={{ color: "var(--muted)" }}>{c.departmentName || "—"}</td>
                   <td>
                     <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
                       {c.churned ? "Churned" : c.stage}
@@ -128,7 +130,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
             })}
             {sortedRows().length === 0 && (
               <tr>
-                <td colSpan={6} className="no-items">No clients match.</td>
+                <td colSpan={7} className="no-items">No clients match.</td>
               </tr>
             )}
           </tbody>
