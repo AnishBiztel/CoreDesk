@@ -3,8 +3,9 @@ import { X } from "lucide-react";
 import { STAGES } from "../lib/constants";
 
 export default function AddDepartmentModal({ companyName, onSave, onClose }) {
-  const [form, setForm] = useState({ companyName: companyName || "", departmentName: "", stage: "Lead" });
+  const [form, setForm] = useState({ departmentName: "", stage: "Lead" });
   const [error, setError] = useState("");
+  const displayName = companyName || "Untitled company";
 
   useEffect(() => {
     function onKey(e) {
@@ -21,32 +22,30 @@ export default function AddDepartmentModal({ companyName, onSave, onClose }) {
 
   function submit(e) {
     e.preventDefault();
-    const co = form.companyName.trim();
     const dept = form.departmentName.trim();
-    if (!co) return setError("Give the company a name.");
     if (!dept) return setError("Give this department or project a name, e.g. \"New Plant\" or \"Powertrain\".");
-    onSave({ companyName: co, departmentName: dept, stage: form.stage });
+    onSave({ companyName, departmentName: dept, stage: form.stage });
   }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <form className="modal-card" style={{ width: 440 }} onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <div className="cal-modal-head">
-          <div className="modal-title" style={{ marginBottom: 0 }}>Add a department</div>
+          <div className="modal-title" style={{ marginBottom: 0 }}>Add a project for {displayName}</div>
           <button type="button" className="icon-btn" onClick={onClose} aria-label="Close"><X size={16} /></button>
         </div>
         <p style={{ fontSize: 12.5, color: "var(--muted)", margin: "0 0 16px" }}>
-          For when a client has a second, independent project — it gets its own stage and pipeline, grouped under the same company.
+          This creates a new, independent entry — its own stage, GTD checklist and issues — grouped under {displayName} in the sidebar.
         </p>
 
         <div className="cal-form">
           <div className="cal-form-full">
-            <label className="field-label" htmlFor="dept-company">Company</label>
-            <input id="dept-company" className="input" autoFocus value={form.companyName} onChange={(e) => set({ companyName: e.target.value })} placeholder="e.g. Stellantis" />
+            <label className="field-label">Company</label>
+            <div className="dept-company-readout">{displayName}</div>
           </div>
           <div className="cal-form-full">
-            <label className="field-label" htmlFor="dept-name">Department / project name</label>
-            <input id="dept-name" className="input" value={form.departmentName} onChange={(e) => set({ departmentName: e.target.value })} placeholder="e.g. New Plant Rollout" />
+            <label className="field-label" htmlFor="dept-name">New project / department name</label>
+            <input id="dept-name" className="input" autoFocus value={form.departmentName} onChange={(e) => set({ departmentName: e.target.value })} placeholder="e.g. New Plant Rollout" />
           </div>
           <div className="cal-form-full">
             <label className="field-label" htmlFor="dept-stage">Starting stage</label>

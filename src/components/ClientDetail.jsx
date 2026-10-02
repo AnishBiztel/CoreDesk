@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   ChevronRight, ChevronDown, Circle, CheckCircle2, AlertCircle, Trash2, FileText,
-  LayoutGrid, Rocket, Check, ClipboardList, Paperclip, History, Download,
+  LayoutGrid, Rocket, Check, ClipboardList, Paperclip, History, Download, Plus,
 } from "lucide-react";
 import { STAGES, SPEC_STATUSES, PRIORITIES, STAGE_COLORS, SPEC_COLORS, PRIORITY_COLORS, GATHERING_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { handleEnterSave, isOverdue, daysSince } from "../lib/helpers";
@@ -30,6 +30,7 @@ export default function ClientDetail({
   updateGtdStep,
   toggleGtdStep,
   onDeleteClient,
+  onAddDepartment,
 }) {
   const [tab, setTab] = useState("overview");
   const [expandedSpec, setExpandedSpec] = useState(null);
@@ -113,6 +114,16 @@ export default function ClientDetail({
           <span className={"stage-duration" + (stuck ? " stuck" : "")}>
             {stuck ? "⚠ " : ""}{stageDur} day{stageDur === 1 ? "" : "s"} in current stage
           </span>
+        )}
+        {onAddDepartment && (
+          <button
+            type="button"
+            className="add-project-link"
+            onClick={() => onAddDepartment(c.companyId, c.name)}
+            title={`Create a new, independent project under ${c.name || "this client"}`}
+          >
+            <Plus size={13} /> Add another project for this client
+          </button>
         )}
       </div>
 

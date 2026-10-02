@@ -397,7 +397,6 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           <Sidebar
             filtered={filtered}
             companiesById={companiesById}
-            onAddDepartment={openAddDepartment}
             onRenameCompany={renameCompany}
             selectedId={selectedId}
             onSelect={selectClient}
@@ -450,6 +449,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
               updateGtdStep={updateGtdStep}
               toggleGtdStep={toggleGtdStep}
               onDeleteClient={deleteClient}
+              onAddDepartment={openAddDepartment}
             />
           )}
           {mainView === "client" && !selected && (

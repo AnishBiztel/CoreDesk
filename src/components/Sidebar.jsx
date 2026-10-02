@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Download, Upload, Trash2, Settings as SettingsIcon, LogOut, Plus, Check, X } from "lucide-react";
+import { Search, Download, Upload, Trash2, Settings as SettingsIcon, LogOut, Check, X } from "lucide-react";
 import { STAGES, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { timeAgo, isOverdue, daysSince } from "../lib/helpers";
 
@@ -24,7 +24,6 @@ function groupByCompany(filtered, companiesById) {
 export default function Sidebar({
   filtered,
   companiesById = {},
-  onAddDepartment,
   onRenameCompany,
   selectedId,
   onSelect,
@@ -113,20 +112,11 @@ export default function Sidebar({
           });
 
           if (!grouped) {
-            // Single department: render exactly as before, with a small "+" to split this
-            // client into multiple departments the first time it's needed.
-            const only = group.items[0];
+            // Single department: render exactly as before. Adding a second project for
+            // this client is done from inside the client's own page, not from here.
             return (
               <div key={group.companyId} className="client-group client-group-single">
                 {rows}
-                <button
-                  type="button"
-                  className="client-add-dept client-add-dept-single"
-                  onClick={(e) => { e.stopPropagation(); onAddDepartment(group.companyId, only.name); }}
-                  title="Add another department or project for this client"
-                >
-                  <Plus size={11} /> Add department
-                </button>
               </div>
             );
           }
@@ -152,15 +142,6 @@ export default function Sidebar({
                     {group.companyName || "Untitled company"}
                   </span>
                 )}
-                <button
-                  type="button"
-                  className="icon-btn"
-                  onClick={() => onAddDepartment(group.companyId, group.companyName)}
-                  aria-label="Add another department"
-                  title="Add another department or project"
-                >
-                  <Plus size={13} />
-                </button>
               </div>
               {rows}
             </div>

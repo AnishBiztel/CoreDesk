@@ -378,6 +378,12 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .pipeline-track.active { background: var(--accent); }
 
 .stage-meta-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.add-project-link {
+  display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+  background: none; border: none; color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); padding: 0;
+}
+.add-project-link:hover { color: var(--accent); }
 .churn-toggle {
   display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);
   cursor: pointer; padding: 5px 10px; border: 1px solid var(--line); border-radius: var(--radius-pill);
@@ -1313,14 +1319,10 @@ button, input, textarea, select { transition: border-color .18s ease, background
    ========================================================= */
 .client-group { position: relative; }
 .client-group-single { position: relative; }
-.client-add-dept-single {
-  display: none; align-items: center; gap: 4px;
-  width: 100%; text-align: left; background: none; border: none;
-  font-size: 10.5px; font-weight: 600; color: var(--muted-2);
-  padding: 2px 14px 6px; cursor: pointer; font-family: var(--font);
+.dept-company-readout {
+  padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--panel-3); color: var(--muted); font-size: 12.5px; font-family: var(--font);
 }
-.client-group-single:hover .client-add-dept-single { display: inline-flex; }
-.client-add-dept-single:hover { color: var(--accent); }
 
 .client-group-head {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
