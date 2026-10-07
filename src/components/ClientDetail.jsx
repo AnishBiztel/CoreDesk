@@ -1,9 +1,23 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ChevronRight, ChevronDown, Circle, CheckCircle2, AlertCircle, Trash2, FileText,
-  LayoutGrid, Rocket, Check, ClipboardList, Paperclip, History, Download, Plus,
+  LayoutGrid, Rocket, Check, ClipboardList, Paperclip, History, Download, Plus, Calendar,
 } from "lucide-react";
-import { STAGES, SPEC_STATUSES, PRIORITIES, STAGE_COLORS, SPEC_COLORS, PRIORITY_COLORS, GATHERING_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
+import { STAGES, SPEC_STATUSES, PRIORITIES, STAGE_COLORS, SPEC_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
+
+function openDatePicker(ref) {
+  const el = ref.current;
+  if (!el) return;
+  if (typeof el.showPicker === "function") {
+    try {
+      el.showPicker();
+      return;
+    } catch {
+      /* fall through to focus */
+    }
+  }
+  el.focus();
+}
 import { handleEnterSave, isOverdue, daysSince } from "../lib/helpers";
 import IssueAdder from "./IssueAdder";
 import CommentThread from "./CommentThread";
@@ -35,6 +49,8 @@ export default function ClientDetail({
   const [tab, setTab] = useState("overview");
   const [expandedSpec, setExpandedSpec] = useState(null);
   const [expandedGathering, setExpandedGathering] = useState(null);
+  const lastContactRef = useRef(null);
+  const nextActionDateRef = useRef(null);
   const confirmDialog = useConfirm();
 
   const c = client;
@@ -62,7 +78,12 @@ export default function ClientDetail({
           </div>
           <div className="meta-field">
             <label>Last contact</label>
-            <input type="date" value={c.lastContact} onChange={(e) => updateClient(c.id, { lastContact: e.target.value })} />
+            <div className="date-field">
+              <input ref={lastContactRef} type="date" value={c.lastContact} onChange={(e) => updateClient(c.id, { lastContact: e.target.value })} />
+              <button type="button" className="date-field-btn" onClick={() => openDatePicker(lastContactRef)} title="Open calendar">
+                <Calendar size={13} />
+              </button>
+            </div>
           </div>
           <div className="meta-field">
             <label>Priority</label>
@@ -159,7 +180,12 @@ export default function ClientDetail({
               </div>
               <div className="meta-field">
                 <label>Due</label>
-                <input type="date" value={c.nextActionDate} onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })} />
+                <div className="date-field">
+                  <input ref={nextActionDateRef} type="date" value={c.nextActionDate} onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })} />
+                  <button type="button" className="date-field-btn" onClick={() => openDatePicker(nextActionDateRef)} title="Open calendar">
+                    <Calendar size={13} />
+                  </button>
+                </div>
               </div>
               {isOverdue(c.nextActionDate) && !c.churned && (
                 <span className="mono overdue-flag" style={{ alignSelf: "center", fontSize: 11 }}>⚠ overdue</span>
@@ -232,7 +258,7 @@ export default function ClientDetail({
                             <span>{item.question || "Untitled question"}</span>
                           </div>
                           <div className="spec-card-head-right">
-                            <span className="pill" style={{ "--pill-color": GATHERING_COLORS[status] }}>{status}</span>
+                            <span className="status-pill" data-status={status}>{status}</span>
                             <button
                               className="icon-btn danger"
                               onClick={(e) => {
