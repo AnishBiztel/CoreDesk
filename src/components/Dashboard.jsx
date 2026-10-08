@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
-import { LayoutGrid, Table2, Download, AlertTriangle, Clock, Flame } from "lucide-react";
+import { LayoutGrid, Table2, Download, AlertTriangle, Clock, Flame, ChevronRight } from "lucide-react";
 import { STAGES, STAGE_COLORS, PRIORITY_COLORS, STALE_DAYS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
+import { computeHealthScore } from "../lib/health";
 import ProjectStatusChart from "./ProjectStatusChart";
 
 function stageDuration(c) {
@@ -30,6 +31,16 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
     const stuck = active.filter((c) => stageDuration(c) !== null && stageDuration(c) > STUCK_STAGE_DAYS);
     const openIssues = active.reduce((sum, c) => sum + c.issues.filter((i) => !i.resolved).length, 0);
     return { overdue, stale, stuck, openIssues };
+  }, [allClients]);
+
+  // "Needs attention": every active client whose health score has dropped into
+  // Watch or At risk, worst first — so the thing most likely to slip is on top.
+  const needsAttention = useMemo(() => {
+    return allClients
+      .filter((c) => !c.churned)
+      .map((c) => ({ client: c, health: computeHealthScore(c) }))
+      .filter((x) => x.health.band === "watch" || x.health.band === "critical")
+      .sort((a, b) => a.health.score - b.health.score);
   }, [allClients]);
 
   const columns = [...STAGES, "Churned"];
@@ -162,6 +173,29 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
           <b>{digest.stale.length}</b> not contacted in {STALE_DAYS}+ days
         </div>
       </div>
+
+      {needsAttention.length > 0 && (
+        <div className="attention-panel">
+          <div className="attention-panel-head">
+            <AlertTriangle size={14} />
+            Needs attention
+            <span className="attention-panel-count">{needsAttention.length}</span>
+          </div>
+          <div className="attention-list">
+            {needsAttention.map(({ client: c, health }) => (
+              <div className="attention-row" key={c.id} onClick={() => onSelect(c.id)}>
+                <span className="health-badge" data-band={health.band}>{health.label} · {health.score}</span>
+                <span className="attention-row-name">
+                  {c.name || "Untitled client"}
+                  {c.departmentName && <span className="attention-row-dept"> — {c.departmentName}</span>}
+                </span>
+                <span className="attention-row-reason">{health.reasons.join(" · ")}</span>
+                <ChevronRight size={14} className="attention-row-arrow" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {view === "kanban" ? (
         <div className="kanban">
