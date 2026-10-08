@@ -161,7 +161,6 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .pill::before {
   content: ""; width: 6px; height: 6px; border-radius: 50%;
   background: var(--pill-color, var(--muted));
-  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--pill-color, var(--muted)) 80%, transparent);
   flex-shrink: 0;
 }
 .badge {
@@ -178,7 +177,6 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .status-dot-glow {
   display: inline-block; width: 7px; height: 7px; border-radius: 50%;
   background: var(--dot-color, var(--muted)); flex-shrink: 0;
-  box-shadow: 0 0 7px 1.5px color-mix(in srgb, var(--dot-color, var(--muted)) 85%, transparent);
 }
 
 /* ---------- App shell ---------- */
@@ -768,8 +766,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
 }
 
 /* Status badges */
-.pill { box-shadow: 0 0 14px -5px currentColor; padding: 4px 9px 4px 7px; }
-.status-dot-glow { box-shadow: 0 0 10px 2px color-mix(in srgb, var(--dot-color, var(--muted)) 70%, transparent); }
+.pill { padding: 4px 9px 4px 7px; }
 
 /* Tabs */
 .tabs { border-color: var(--line); gap: 4px; }
@@ -788,8 +785,6 @@ button, input, textarea, select { transition: border-color .18s ease, background
   min-width: 330px; background: var(--panel-3); border-color: var(--line-bright);
   backdrop-filter: blur(18px); box-shadow: var(--shadow-2);
 }
-.toast-icon.success { filter: drop-shadow(0 0 6px rgba(53,212,154,.45)); }
-.toast-icon.error { filter: drop-shadow(0 0 6px rgba(255,107,122,.4)); }
 
 /* Modals */
 .modal-overlay { background: rgba(2,4,7,.72); backdrop-filter: blur(8px); }
@@ -860,8 +855,8 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .project-status-live span { width:6px; height:6px; border-radius:50%; background:var(--green); }
 .project-status-body { display:grid; grid-template-columns:260px 1fr; gap:26px; align-items:center; }
 .project-status-donut-wrap { display:flex; flex-direction:column; align-items:center; }
-.project-status-donut { width:174px; height:174px; border-radius:50%; display:grid; place-items:center; position:relative; box-shadow:0 0 45px color-mix(in srgb, var(--accent) 35%, transparent); }
-.project-status-donut::before { content:""; position:absolute; inset:10px; border-radius:50%; background:var(--panel); box-shadow:inset 0 1px 0 rgba(255,255,255,.04); }
+.project-status-donut { width:174px; height:174px; border-radius:50%; display:grid; place-items:center; position:relative; }
+.project-status-donut::before { content:""; position:absolute; inset:13px; border-radius:50%; background:var(--panel); box-shadow:inset 0 1px 0 rgba(255,255,255,.04); }
 .project-status-donut-inner { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; }
 .project-status-donut-inner strong { font-size:31px; line-height:1; letter-spacing:-.04em; }
 .project-status-donut-inner span { margin-top:6px; color:var(--muted); font-size:10.5px; }
@@ -905,7 +900,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
   .project-status-body { grid-template-columns:1fr; }
   .project-status-donut-wrap { align-items:flex-start; flex-direction:row; gap:16px; }
   .project-status-donut { width:145px; height:145px; flex-shrink:0; }
-  .project-status-donut::before { inset:9px; }
+  .project-status-donut::before { inset:11px; }
   .project-status-total-note { max-width:190px; text-align:left; }
 }
 @media (max-width: 620px) {
@@ -1001,9 +996,6 @@ button, input, textarea, select { transition: border-color .18s ease, background
   color: color-mix(in srgb, var(--pill-color, var(--muted)) 78%, black 20%);
   border-color: color-mix(in srgb, var(--pill-color, var(--muted)) 38%, white 62%);
 }
-[data-theme="light"] .pill::before {
-  box-shadow: 0 0 5px 0.5px color-mix(in srgb, var(--pill-color, var(--muted)) 65%, transparent);
-}
 [data-theme="light"] .badge-muted { background: var(--panel-3); color: var(--muted); }
 [data-theme="light"] .badge-red { background: var(--red-soft); color: #A8291D; }
 [data-theme="light"] .badge-amber { background: var(--amber-soft); color: #8A5A05; }
@@ -1021,12 +1013,6 @@ button, input, textarea, select { transition: border-color .18s ease, background
 [data-theme="light"] .spec-card:hover {
   box-shadow: 0 4px 14px rgba(20,24,33,0.06);
 }
-[data-theme="light"] .status-dot-glow,
-[data-theme="light"] .project-status-dot {
-  box-shadow: 0 0 4px 0.5px color-mix(in srgb, var(--dot-color, var(--muted)) 70%, transparent);
-}
-[data-theme="light"] .toast-icon.success { filter: drop-shadow(0 0 4px rgba(31,146,96,0.3)); }
-[data-theme="light"] .toast-icon.error { filter: drop-shadow(0 0 4px rgba(214,71,60,0.28)); }
 
 /* ---------- Breadcrumb + KPI cards (Dashboard) ---------- */
 .breadcrumb {

@@ -13,14 +13,6 @@ const CHART_BLUE_SCALE = {
   "Live Support": "#0176D3",
 };
 
-function hexToRgba(hex, alpha) {
-  const clean = String(hex || "#8B8FA3").replace("#", "");
-  const value = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
-  const n = Number.parseInt(value, 16);
-  if (Number.isNaN(n)) return `rgba(139,143,163,${alpha})`;
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
-
 export default function ProjectStatusChart({ clients = [] }) {
   const statusData = useMemo(() => {
     const active = clients.filter((client) => !client.churned);
@@ -78,7 +70,7 @@ export default function ProjectStatusChart({ clients = [] }) {
             return (
               <div className="project-status-row" key={item.stage}>
                 <span className="project-status-row-label">
-                  <span className="project-status-dot" style={{ background: item.color, boxShadow: `0 0 9px ${hexToRgba(item.color, 0.55)}` }} />
+                  <span className="project-status-dot" style={{ background: item.color }} />
                   {item.stage}
                 </span>
                 <span className="project-status-row-bar">
