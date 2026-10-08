@@ -327,18 +327,6 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .page-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
 .page-actions { display: flex; gap: 8px; align-items: center; }
 
-/* Digest banner */
-.digest {
-  display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
-  border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius);
-  padding: 14px 18px; margin-bottom: 22px;
-}
-.digest-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
-.digest-item b { color: var(--ink); font-family: var(--mono); }
-.digest-item.warn b { color: var(--amber); }
-.digest-item.crit b { color: var(--red); }
-.digest-empty { color: var(--muted-2); font-size: 12.5px; }
-
 /* Needs-attention panel */
 .attention-panel {
   border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius);
@@ -796,9 +784,6 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .data-table th { color: var(--muted); border-bottom-color: var(--line); }
 .data-table td { border-bottom-color: var(--line-soft); }
 .data-table tr:hover td { background: color-mix(in srgb, var(--ink) 4%, transparent); }
-
-/* Digest */
-.digest { background: var(--panel-2); border-color: var(--line); box-shadow: var(--shadow-1); }
 
 /* Toasts */
 .toast-viewport { right: 24px; bottom: 24px; }

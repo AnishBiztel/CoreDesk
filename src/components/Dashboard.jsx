@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { LayoutGrid, Table2, Download, AlertTriangle, Clock, Flame, ChevronRight } from "lucide-react";
-import { STAGES, STAGE_COLORS, PRIORITY_COLORS, STALE_DAYS, STUCK_STAGE_DAYS } from "../lib/constants";
+import { LayoutGrid, Table2, Download, AlertTriangle, ChevronRight } from "lucide-react";
+import { STAGES, STAGE_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
 import { computeHealthScore } from "../lib/health";
 import ProjectStatusChart from "./ProjectStatusChart";
@@ -22,15 +22,6 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
       0
     );
     return { total: allClients.length, active: active.length, issues, pending };
-  }, [allClients]);
-
-  const digest = useMemo(() => {
-    const active = allClients.filter((c) => !c.churned);
-    const overdue = active.filter((c) => isOverdue(c.nextActionDate));
-    const stale = active.filter((c) => !c.lastContact || daysSince(c.lastContact) > STALE_DAYS);
-    const stuck = active.filter((c) => stageDuration(c) !== null && stageDuration(c) > STUCK_STAGE_DAYS);
-    const openIssues = active.reduce((sum, c) => sum + c.issues.filter((i) => !i.resolved).length, 0);
-    return { overdue, stale, stuck, openIssues };
   }, [allClients]);
 
   // "Needs attention": every active client whose health score has dropped into
@@ -158,21 +149,6 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
       </div>
 
       <ProjectStatusChart clients={allClients} />
-
-      <div className="digest">
-        <div className={"digest-item" + (digest.overdue.length ? " crit" : "")}>
-          <AlertTriangle size={14} />
-          <b>{digest.overdue.length}</b> overdue next-action{digest.overdue.length === 1 ? "" : "s"}
-        </div>
-        <div className={"digest-item" + (digest.stuck.length ? " warn" : "")}>
-          <Flame size={14} />
-          <b>{digest.stuck.length}</b> stuck &gt;{STUCK_STAGE_DAYS}d in stage
-        </div>
-        <div className={"digest-item" + (digest.stale.length ? " warn" : "")}>
-          <Clock size={14} />
-          <b>{digest.stale.length}</b> not contacted in {STALE_DAYS}+ days
-        </div>
-      </div>
 
       {needsAttention.length > 0 && (
         <div className="attention-panel">
