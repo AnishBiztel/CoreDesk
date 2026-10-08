@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #16171A;
-  --panel: #1D1E22;
-  --panel-2: #232428;
-  --panel-3: #2A2B30;
-  --panel-4: #323338;
-  --line: #2C2D31;
-  --line-soft: #212226;
-  --line-bright: #3D3E43;
+  --bg: #000000;
+  --panel: #0A0A0A;
+  --panel-2: #111111;
+  --panel-3: #161616;
+  --panel-4: #1C1C1C;
+  --line: #1F1F1F;
+  --line-soft: #161616;
+  --line-bright: #2A2A2A;
   --ink: #F5F5F4;
   --muted: #A3A2A0;
   --muted-2: #6F6E6C;
