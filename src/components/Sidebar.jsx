@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, Download, Upload, Trash2, Settings as SettingsIcon, LogOut, Check, X } from "lucide-react";
 import { STAGES, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { timeAgo, isOverdue, daysSince } from "../lib/helpers";
+import { computeHealthScore } from "../lib/health";
 
 // Groups clients by company_id, preserving the sort order already applied to `filtered`
 // (the first time a company is seen decides where its whole group sits in the list).
@@ -82,6 +83,7 @@ export default function Sidebar({
             const gtdTotal = (c.gtd || []).length;
             const dur = daysSince(c.stageEnteredAt);
             const stuck = dur !== null && dur > STUCK_STAGE_DAYS && !c.churned;
+            const health = computeHealthScore(c);
             return (
               <div
                 key={c.id}
@@ -91,6 +93,13 @@ export default function Sidebar({
                 <div className="client-item-name">
                   <span className="client-item-name-left">
                     <span className="priority-dot" style={{ background: PRIORITY_COLORS[c.priority || "Medium"] }} aria-label={(c.priority || "Medium") + " priority"} />
+                    {!c.churned && (
+                      <span
+                        className="health-dot"
+                        data-band={health.band}
+                        title={health.reasons.length ? `${health.label} (${health.score}) — ${health.reasons.join(", ")}` : `${health.label} (${health.score})`}
+                      />
+                    )}
                     {grouped ? (c.departmentName || c.name || "Untitled department") : (c.name || "Untitled client")}
                   </span>
                   <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>

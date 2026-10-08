@@ -19,6 +19,7 @@ function openDatePicker(ref) {
   el.focus();
 }
 import { handleEnterSave, isOverdue, daysSince } from "../lib/helpers";
+import { computeHealthScore } from "../lib/health";
 import IssueAdder from "./IssueAdder";
 import CommentThread from "./CommentThread";
 import ActivityFeed from "./ActivityFeed";
@@ -56,6 +57,7 @@ export default function ClientDetail({
   const c = client;
   const stageDur = daysSince(c.stageEnteredAt);
   const stuck = stageDur !== null && stageDur > STUCK_STAGE_DAYS && !c.churned;
+  const health = computeHealthScore(c);
 
   return (
     <div className="main-inner">
@@ -127,6 +129,15 @@ export default function ClientDetail({
       </div>
 
       <div className="stage-meta-row">
+        {!c.churned && (
+          <span
+            className="health-badge"
+            data-band={health.band}
+            title={health.reasons.length ? health.reasons.join(", ") : "No risk signals"}
+          >
+            {health.label} · {health.score}
+          </span>
+        )}
         <div className={"churn-toggle" + (c.churned ? " active" : "")} onClick={() => updateClient(c.id, { churned: !c.churned })}>
           {c.churned ? <AlertCircle size={13} /> : <Circle size={13} />}
           {c.churned ? "Marked as churned — click to undo" : "Mark as churned"}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
+import { computeHealthScore } from "../lib/health";
 
 function stageDuration(c) {
   return daysSince(c.stageEnteredAt);
@@ -30,6 +31,10 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
         case "daysInStage":
           av = stageDuration(a) ?? -1;
           bv = stageDuration(b) ?? -1;
+          break;
+        case "health":
+          av = computeHealthScore(a).score ?? 999;
+          bv = computeHealthScore(b).score ?? 999;
           break;
         case "nextActionDate":
           av = a.nextActionDate || "9999";
@@ -65,6 +70,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
       { label: "Due", value: (c) => c.nextActionDate },
       { label: "Last contact", value: (c) => c.lastContact },
       { label: "Days in stage", value: (c) => stageDuration(c) ?? "" },
+      { label: "Health score", value: (c) => computeHealthScore(c).score ?? "" },
       { label: "Open issues", value: (c) => c.issues.filter((i) => !i.resolved).length },
       { label: "Specs", value: (c) => c.specs.length },
     ]);
@@ -96,6 +102,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
               <th onClick={() => toggleSort("name")}>Client</th>
               <th>Department</th>
               <th onClick={() => toggleSort("stage")}>Stage</th>
+              <th onClick={() => toggleSort("health")}>Health</th>
               <th onClick={() => toggleSort("priority")}>Priority</th>
               <th onClick={() => toggleSort("daysInStage")}>Days in stage</th>
               <th onClick={() => toggleSort("nextActionDate")}>Next action / due</th>
@@ -105,6 +112,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
           <tbody>
             {sortedRows().map((c) => {
               const dur = stageDuration(c);
+              const health = computeHealthScore(c);
               return (
                 <tr key={c.id} onClick={() => onSelect(c.id)}>
                   <td style={{ fontWeight: 600 }}>{c.name || "Untitled client"}</td>
@@ -113,6 +121,15 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
                     <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
                       {c.churned ? "Churned" : c.stage}
                     </span>
+                  </td>
+                  <td>
+                    {c.churned ? (
+                      <span style={{ color: "var(--muted-2)" }}>—</span>
+                    ) : (
+                      <span className="health-badge" data-band={health.band} title={health.reasons.join(", ") || "No risk signals"}>
+                        {health.score}
+                      </span>
+                    )}
                   </td>
                   <td>{c.priority}</td>
                   <td className="mono">{dur !== null ? dur + "d" : "—"}</td>
@@ -130,7 +147,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
             })}
             {sortedRows().length === 0 && (
               <tr>
-                <td colSpan={7} className="no-items">No clients match.</td>
+                <td colSpan={8} className="no-items">No clients match.</td>
               </tr>
             )}
           </tbody>
