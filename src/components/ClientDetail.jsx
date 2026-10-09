@@ -237,15 +237,15 @@ export default function ClientDetail({
             <div className="cd-card cd-issues-card">
               <div className="cd-card-head">
                 <span className="cd-card-title">Issues &amp; blockers</span>
-                <span className="badge badge-red">{openIssues.length} Open</span>
-                <span className="badge badge-green">{resolvedIssues.length} Resolved</span>
+                <span className="status-pill" data-status="Open">{openIssues.length} Open</span>
+                <span className="status-pill" data-status="Resolved">{resolvedIssues.length} Resolved</span>
               </div>
 
               {c.issues.length === 0 && <div className="no-items">No issues logged.</div>}
               {c.issues.map((issue) => (
                 <div key={issue.id} className={"cd-issue-row" + (issue.resolved ? " resolved" : "")}>
                   <div className="cd-issue-row-top">
-                    <span className={"badge " + (issue.resolved ? "badge-green" : "badge-red")}>{issue.resolved ? "RESOLVED" : "OPEN"}</span>
+                    <span className="status-pill" data-status={issue.resolved ? "Resolved" : "Open"}>{issue.resolved ? "RESOLVED" : "OPEN"}</span>
                     <span className="cd-issue-time">Reported {timeAgo(issue.createdAt)}</span>
                     <button className="icon-btn danger" onClick={() => deleteIssue(c.id, issue.id)} aria-label="Delete issue">
                       <Trash2 size={13} />
@@ -266,7 +266,7 @@ export default function ClientDetail({
             <div className="cd-card cd-next-action-card" data-overdue={overdueNextAction ? "true" : "false"}>
               <div className="cd-card-head">
                 <span className="cd-card-title">Next action</span>
-                {overdueNextAction && <span className="badge badge-red">OVERDUE</span>}
+                {overdueNextAction && <span className="status-pill" data-status="Overdue">OVERDUE</span>}
               </div>
 
               <DebouncedField

@@ -168,14 +168,14 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 }
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; padding: 2px 8px; border-radius: var(--radius-pill);
-  font-family: var(--mono); font-weight: 500;
+  font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid transparent;
+  font-family: var(--mono); font-weight: 600; white-space: nowrap;
 }
-.badge-muted { background: var(--panel-3); color: var(--muted); }
-.badge-red { background: var(--red-soft); color: #F0918C; }
-.badge-amber { background: var(--amber-soft); color: #E8C27E; }
-.badge-green { background: var(--green-soft); color: #7CDBA9; }
-.badge-accent { background: var(--accent-soft); color: var(--accent-ink); }
+.badge-muted { background: #4B5563; color: #fff; }
+.badge-red { background: #D6544A; color: #fff; }
+.badge-amber { background: #D69E2E; color: #fff; }
+.badge-green { background: #2F9E6E; color: #fff; }
+.badge-accent { background: var(--accent); color: #fff; }
 /* Glowing status dot, standalone (used next to plain text where a full pill is too heavy) */
 .status-dot-glow {
   display: inline-block; width: 7px; height: 7px; border-radius: 50%;
@@ -274,8 +274,14 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .status-pill { display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; padding: 2px 8px; min-width: 54px; height: 20px; border-radius: 4px; font-family: var(--font); border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; line-height: 1; }
 .status-pill[data-status="Pending"] { background: #4B5563; color: #fff; }
 .status-pill[data-status="Answered"] { background: #2F9E6E; color: #fff; }
+.status-pill[data-status="Open"] { background: #D6544A; color: #fff; }
+.status-pill[data-status="Resolved"] { background: #2F9E6E; color: #fff; }
+.status-pill[data-status="Overdue"] { background: #D6544A; color: #fff; }
 [data-theme="light"] .status-pill[data-status="Pending"] { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
 [data-theme="light"] .status-pill[data-status="Answered"] { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
+[data-theme="light"] .status-pill[data-status="Open"] { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+[data-theme="light"] .status-pill[data-status="Resolved"] { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
+[data-theme="light"] .status-pill[data-status="Overdue"] { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
 
 /* ---------- Client health score ---------- */
 .health-dot {
@@ -338,9 +344,10 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
   color: var(--ink); padding: 12px 18px; border-bottom: 1px solid var(--line);
 }
 .attention-panel-count {
-  font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--red);
-  background: var(--red-soft); border-radius: var(--radius-pill); padding: 1px 8px; margin-left: 2px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: #fff;
+  background: #D6544A; border-radius: var(--radius-sm); padding: 1px 8px; margin-left: 2px;
 }
+[data-theme="light"] .attention-panel-count { background: #FEE2E2; color: #B91C1C; }
 .attention-list { display: flex; flex-direction: column; }
 .attention-row {
   display: flex; align-items: center; gap: 12px; padding: 10px 18px;
@@ -364,9 +371,10 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 }
 .attn-action-btn:hover { background: var(--panel-3); border-color: var(--accent); color: var(--accent-ink); }
 .attn-overdue-flag {
-  font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: var(--red);
-  background: var(--red-soft); border-radius: var(--radius-pill); padding: 2px 8px; white-space: nowrap;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: #fff;
+  background: #D6544A; border-radius: var(--radius-sm); padding: 2px 8px; white-space: nowrap;
 }
+[data-theme="light"] .attn-overdue-flag { background: #FEE2E2; color: #B91C1C; }
 .attention-row-arrow { color: var(--muted-2); flex-shrink: 0; }
 
 /* View toggle */
@@ -1085,11 +1093,11 @@ button, input, textarea, select { transition: border-color .18s ease, background
   color: color-mix(in srgb, var(--pill-color, var(--muted)) 78%, black 20%);
   border-color: color-mix(in srgb, var(--pill-color, var(--muted)) 38%, white 62%);
 }
-[data-theme="light"] .badge-muted { background: var(--panel-3); color: var(--muted); }
-[data-theme="light"] .badge-red { background: var(--red-soft); color: #A8291D; }
-[data-theme="light"] .badge-amber { background: var(--amber-soft); color: #8A5A05; }
-[data-theme="light"] .badge-green { background: var(--green-soft); color: #146B41; }
-[data-theme="light"] .badge-accent { background: var(--accent-soft); color: var(--accent-bright); }
+[data-theme="light"] .badge-muted { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
+[data-theme="light"] .badge-red { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+[data-theme="light"] .badge-amber { background: #FEF3C7; color: #B45309; border-color: #FDE68A; }
+[data-theme="light"] .badge-green { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
+[data-theme="light"] .badge-accent { background: #EFF6FB; color: #0176D3; border-color: #B0D5F5; }
 
 [data-theme="light"] .auth-screen {
   background: radial-gradient(circle at 30% 20%, #EDEAFB 0%, var(--bg) 55%);
