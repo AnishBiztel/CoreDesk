@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import {
-  ChevronRight, ChevronDown, Circle, CheckCircle2, AlertCircle, Trash2, FileText,
+  ChevronRight, ChevronDown, CheckCircle2, AlertCircle, Trash2, FileText,
   LayoutGrid, Rocket, Check, ClipboardList, Paperclip, History, Download, Plus, Calendar,
+  Eye, RotateCcw, User, Briefcase, Clock, Flag,
 } from "lucide-react";
 import { STAGES, SPEC_STATUSES, PRIORITIES, STAGE_COLORS, SPEC_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 
@@ -18,7 +19,7 @@ function openDatePicker(ref) {
   }
   el.focus();
 }
-import { handleEnterSave, isOverdue, daysSince } from "../lib/helpers";
+import { handleEnterSave, isOverdue, daysSince, timeAgo, initials } from "../lib/helpers";
 import { computeHealthScore } from "../lib/health";
 import IssueAdder from "./IssueAdder";
 import CommentThread from "./CommentThread";
@@ -58,105 +59,160 @@ export default function ClientDetail({
   const stageDur = daysSince(c.stageEnteredAt);
   const stuck = stageDur !== null && stageDur > STUCK_STAGE_DAYS && !c.churned;
   const health = computeHealthScore(c);
+  const currentIdx = STAGES.indexOf(c.stage);
+  const tierLabel = { High: "TIER 1", Medium: "TIER 2", Low: "TIER 3" }[c.priority] || "";
+  const sinceContact = c.lastContact ? daysSince(c.lastContact) : null;
+  const accountCode = (c.id || "").replace(/-/g, "").slice(0, 6).toUpperCase();
+  const openIssues = c.issues.filter((i) => !i.resolved);
+  const resolvedIssues = c.issues.filter((i) => i.resolved);
+  const overdueNextAction = isOverdue(c.nextActionDate) && !c.churned;
+  const overdueDays = overdueNextAction ? daysSince(c.nextActionDate) : null;
 
   return (
-    <div className="main-inner">
-      <div className="client-header">
-        <DebouncedField
-          className="name-input"
-          placeholder="Client name"
-          value={c.name}
-          onCommit={(v) => updateClient(c.id, { name: v })}
-          onKeyDown={handleEnterSave}
-        />
-        <div className="meta-row meta-row-fill">
-          <div className="meta-field">
-            <label>Contact</label>
-            <DebouncedField placeholder="Name, role" value={c.contact} onCommit={(v) => updateClient(c.id, { contact: v })} onKeyDown={handleEnterSave} />
+    <div className="main-inner cd-wide">
+      <nav className="breadcrumb" aria-label="Breadcrumb">
+        <span>Clients</span> <span className="breadcrumb-sep">/</span>{" "}
+        <span className="breadcrumb-current">{c.name || "Untitled client"}</span>
+      </nav>
+
+      <div className="cd-header">
+        <div className="cd-header-top">
+          <DebouncedField
+            className="name-input"
+            placeholder="Client name"
+            value={c.name}
+            onCommit={(v) => updateClient(c.id, { name: v })}
+            onKeyDown={handleEnterSave}
+          />
+          <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
+            {(c.churned ? "Churned" : c.stage).toUpperCase()} STAGE
+          </span>
+          {accountCode && <span className="cd-account-id">Account ID: #{accountCode}</span>}
+        </div>
+
+        <div className="cd-header-actions">
+          {!c.churned && (
+            <span
+              className="health-badge-lg"
+              data-band={health.band}
+              title={health.reasons.length ? health.reasons.join(", ") : "No risk signals"}
+            >
+              <Eye size={13} /> {health.label} #{health.score}
+            </span>
+          )}
+          <button type="button" className={"btn btn-sm" + (c.churned ? " btn-primary" : "")} onClick={() => updateClient(c.id, { churned: !c.churned })}>
+            {c.churned ? <RotateCcw size={13} /> : <AlertCircle size={13} />}
+            {c.churned ? "Restore client" : "Mark as Churned"}
+          </button>
+          {onAddDepartment && (
+            <button
+              type="button"
+              className="btn btn-sm btn-primary"
+              onClick={() => onAddDepartment(c.companyId, c.name)}
+              title={`Create a new, independent project under ${c.name || "this client"}`}
+            >
+              <Plus size={13} /> Add Project For Client
+            </button>
+          )}
+        </div>
+
+        {stageDur !== null && (
+          <div className="cd-header-sub">
+            <span className={stuck ? "stuck-flag" : ""}>
+              {stuck ? "⚠ " : ""}{stageDur} day{stageDur === 1 ? "" : "s"} in current stage
+            </span>
           </div>
-          <div className="meta-field">
-            <label>Industry / use case</label>
-            <DebouncedField placeholder="e.g. automotive QC" value={c.industry} onCommit={(v) => updateClient(c.id, { industry: v })} onKeyDown={handleEnterSave} />
-          </div>
-          <div className="meta-field">
-            <label>Last contact</label>
-            <div className="date-field">
-              <input ref={lastContactRef} type="date" value={c.lastContact} onChange={(e) => updateClient(c.id, { lastContact: e.target.value })} />
-              <button type="button" className="date-field-btn" onClick={() => openDatePicker(lastContactRef)} title="Open calendar">
-                <Calendar size={13} />
-              </button>
-            </div>
-          </div>
-          <div className="meta-field">
-            <label>Priority</label>
-            <select value={c.priority || "Medium"} onChange={(e) => updateClient(c.id, { priority: e.target.value })}>
-              {PRIORITIES.map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
+        )}
+      </div>
+
+      <div className="stage-pipeline-card">
+        <div className="stage-pipeline-head">
+          <span className="stage-pipeline-title">Stage pipeline lifecycle</span>
+          {!c.churned && <span className="stage-pipeline-step">Step {currentIdx + 1} of {STAGES.length}</span>}
+        </div>
+        <div className="stage-pipeline-row">
+          {STAGES.map((stage, i) => {
+            const done = i < currentIdx;
+            const isCurrent = i === currentIdx && !c.churned;
+            return (
+              <div
+                className={"stage-pipeline-cell" + (done ? " done" : "") + (isCurrent ? " current" : "")}
+                key={stage}
+                onClick={() => updateClient(c.id, { stage, churned: false })}
+                title={`Set stage to ${stage}`}
+              >
+                <div className="stage-pipeline-cell-top">
+                  {done ? <CheckCircle2 size={13} /> : isCurrent ? <span className="stage-pipeline-dot" /> : null}
+                  <span className="stage-pipeline-num">Stage {String(i + 1).padStart(2, "0")}</span>
+                </div>
+                <div className="stage-pipeline-name">{stage}</div>
+                <div className="stage-pipeline-bar">
+                  <div className="stage-pipeline-bar-fill" style={{ width: done ? "100%" : isCurrent ? "45%" : "0%" }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="cd-info-grid">
+        <div className="cd-info-card">
+          <div className="cd-info-label"><User size={12} /> Primary contact</div>
+          <div className="cd-info-with-avatar">
+            <span className="cd-avatar">{initials(c.contact)}</span>
+            <DebouncedField
+              className="cd-info-input"
+              placeholder="Name, role"
+              value={c.contact}
+              onCommit={(v) => updateClient(c.id, { contact: v })}
+              onKeyDown={handleEnterSave}
+            />
           </div>
         </div>
-        <div className="overview-box">
-          <label>High-level overview</label>
+        <div className="cd-info-card">
+          <div className="cd-info-label"><Briefcase size={12} /> Industry &amp; use case</div>
           <DebouncedField
-            as="textarea"
-            className="overview-textarea"
-            placeholder="One or two lines on where this client stands overall — useful for a quick catch-up before a call."
-            value={c.overview}
-            onCommit={(v) => updateClient(c.id, { overview: v })}
+            className="cd-info-input cd-info-input-lg"
+            placeholder="e.g. Automotive — AI visual supervisor"
+            value={c.industry}
+            onCommit={(v) => updateClient(c.id, { industry: v })}
             onKeyDown={handleEnterSave}
           />
         </div>
-      </div>
-
-      <div className="pipeline">
-        {STAGES.map((stage, i) => {
-          const currentIdx = STAGES.indexOf(c.stage);
-          const isDone = i < currentIdx || (i === currentIdx && !c.churned);
-          const isCurrent = i === currentIdx;
-          return (
-            <div className="pipeline-node-wrap" key={stage} style={{ flex: 1 }}>
-              <div className="pipeline-node" onClick={() => updateClient(c.id, { stage, churned: false })}>
-                <div className={"pipeline-dot" + (isDone ? " done" : "") + (isCurrent ? " current" : "")} />
-                <div className={"pipeline-label" + (isCurrent ? " active" : "")}>{stage}</div>
-              </div>
-              {i < STAGES.length - 1 && (
-                <div className={"pipeline-track" + (i < currentIdx - 1 ? " done" : i === currentIdx - 1 ? " active" : "")} />
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="stage-meta-row">
-        {!c.churned && (
-          <span
-            className="health-badge"
-            data-band={health.band}
-            title={health.reasons.length ? health.reasons.join(", ") : "No risk signals"}
-          >
-            {health.label} · {health.score}
-          </span>
-        )}
-        <div className={"churn-toggle" + (c.churned ? " active" : "")} onClick={() => updateClient(c.id, { churned: !c.churned })}>
-          {c.churned ? <AlertCircle size={13} /> : <Circle size={13} />}
-          {c.churned ? "Marked as churned — click to undo" : "Mark as churned"}
+        <div className="cd-info-card">
+          <div className="cd-info-label"><Clock size={12} /> Last contact date</div>
+          <div className="date-field">
+            <input ref={lastContactRef} type="date" value={c.lastContact} onChange={(e) => updateClient(c.id, { lastContact: e.target.value })} />
+            <button type="button" className="date-field-btn" onClick={() => openDatePicker(lastContactRef)} title="Open calendar">
+              <Calendar size={13} />
+            </button>
+          </div>
+          {sinceContact !== null && <div className="cd-info-sub">{sinceContact === 0 ? "today" : `${sinceContact} day${sinceContact === 1 ? "" : "s"} ago`}</div>}
         </div>
-        {stageDur !== null && (
-          <span className={"stage-duration" + (stuck ? " stuck" : "")}>
-            {stuck ? "⚠ " : ""}{stageDur} day{stageDur === 1 ? "" : "s"} in current stage
-          </span>
-        )}
-        {onAddDepartment && (
-          <button
-            type="button"
-            className="add-project-link"
-            onClick={() => onAddDepartment(c.companyId, c.name)}
-            title={`Create a new, independent project under ${c.name || "this client"}`}
-          >
-            <Plus size={13} /> Add another project for this client
-          </button>
-        )}
+        <div className="cd-info-card">
+          <div className="cd-info-label"><Flag size={12} /> Priority level</div>
+          <div className="cd-priority-row">
+            <span className="priority-dot" style={{ background: PRIORITY_COLORS[c.priority] }} />
+            <select className="cd-priority-select" value={c.priority || "Medium"} onChange={(e) => updateClient(c.id, { priority: e.target.value })}>
+              {PRIORITIES.map((p) => (
+                <option key={p} value={p}>{p} priority</option>
+              ))}
+            </select>
+            {tierLabel && <span className="badge badge-muted">{tierLabel}</span>}
+          </div>
+        </div>
+      </div>
+
+      <div className="overview-box cd-overview-card">
+        <label>High-level overview &amp; specifications</label>
+        <DebouncedField
+          as="textarea"
+          className="overview-textarea"
+          placeholder="One or two lines on where this client stands overall — useful for a quick catch-up before a call."
+          value={c.overview}
+          onCommit={(v) => updateClient(c.id, { overview: v })}
+          onKeyDown={handleEnterSave}
+        />
       </div>
 
       <div className="tabs">
@@ -182,44 +238,83 @@ export default function ClientDetail({
 
       {tab === "overview" && (
         <>
-          <div className="section">
-            <div className="section-title">Next action</div>
-            <div className="meta-row" style={{ marginTop: 0 }}>
-              <div className="meta-field" style={{ flex: 1 }}>
-                <label aria-hidden="true" style={{ visibility: "hidden" }}>Next action</label>
-                <DebouncedField aria-label="Next action" placeholder="e.g. send POC results deck" value={c.nextAction} onCommit={(v) => updateClient(c.id, { nextAction: v })} onKeyDown={handleEnterSave} style={{ minWidth: 280 }} />
+          <div className="cd-overview-split">
+            <div className="cd-card cd-issues-card">
+              <div className="cd-card-head">
+                <span className="cd-card-title">Issues &amp; blockers</span>
+                <span className="badge badge-red">{openIssues.length} Open</span>
+                <span className="badge badge-green">{resolvedIssues.length} Resolved</span>
               </div>
-              <div className="meta-field">
-                <label>Due</label>
-                <div className="date-field">
-                  <input ref={nextActionDateRef} type="date" value={c.nextActionDate} onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })} />
-                  <button type="button" className="date-field-btn" onClick={() => openDatePicker(nextActionDateRef)} title="Open calendar">
-                    <Calendar size={13} />
+
+              {c.issues.length === 0 && <div className="no-items">No issues logged.</div>}
+              {c.issues.map((issue) => (
+                <div key={issue.id} className={"cd-issue-row" + (issue.resolved ? " resolved" : "")}>
+                  <div className="cd-issue-row-top">
+                    <span className={"badge " + (issue.resolved ? "badge-green" : "badge-red")}>{issue.resolved ? "RESOLVED" : "OPEN"}</span>
+                    <span className="cd-issue-time">Reported {timeAgo(issue.createdAt)}</span>
+                    <button className="icon-btn danger" onClick={() => deleteIssue(c.id, issue.id)} aria-label="Delete issue">
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                  <div className="cd-issue-text">{issue.text}</div>
+                  <button
+                    className={"attn-action-btn" + (issue.resolved ? "" : " cd-resolve-btn")}
+                    onClick={() => toggleIssue(c.id, issue.id)}
+                  >
+                    {issue.resolved ? <><RotateCcw size={12} /> Reopen</> : <><Check size={12} /> Resolve issue</>}
                   </button>
                 </div>
+              ))}
+              <IssueAdder onAdd={(text) => addIssue(c.id, text)} />
+            </div>
+
+            <div className="cd-card cd-next-action-card" data-overdue={overdueNextAction ? "true" : "false"}>
+              <div className="cd-card-head">
+                <span className="cd-card-title">Next action</span>
+                {overdueNextAction && <span className="badge badge-red">OVERDUE</span>}
               </div>
-              {isOverdue(c.nextActionDate) && !c.churned && (
-                <span className="mono overdue-flag" style={{ alignSelf: "center", fontSize: 11 }}>⚠ overdue</span>
+
+              <DebouncedField
+                className="cd-next-action-input"
+                placeholder="e.g. send POC results deck"
+                value={c.nextAction}
+                onCommit={(v) => updateClient(c.id, { nextAction: v })}
+                onKeyDown={handleEnterSave}
+              />
+
+              <div className="cd-next-action-stats">
+                <div>
+                  <div className="cd-info-label">Target deadline</div>
+                  <div className="date-field">
+                    <input ref={nextActionDateRef} type="date" value={c.nextActionDate} onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })} />
+                    <button type="button" className="date-field-btn" onClick={() => openDatePicker(nextActionDateRef)} title="Open calendar">
+                      <Calendar size={13} />
+                    </button>
+                  </div>
+                </div>
+                {overdueDays !== null && (
+                  <div>
+                    <div className="cd-info-label">Days overdue</div>
+                    <div className="cd-overdue-num">{overdueDays}</div>
+                  </div>
+                )}
+              </div>
+
+              {(c.nextAction || c.nextActionDate) && (
+                <button
+                  className="btn btn-sm cd-complete-btn"
+                  onClick={() =>
+                    updateClient(
+                      c.id,
+                      { nextAction: "", nextActionDate: "" },
+                      { action: "next_action_completed", detail: `marked "${c.nextAction || "the next action"}" complete` }
+                    )
+                  }
+                >
+                  <Check size={13} /> Mark complete
+                </button>
               )}
             </div>
-          </div>
-
-          <div className="section">
-            <div className="section-title">Issues</div>
-            {c.issues.length === 0 && <div className="no-items">No issues logged.</div>}
-            {c.issues.map((issue) => (
-              <div key={issue.id} className={"issue-row" + (issue.resolved ? " resolved" : "")}>
-                <span onClick={() => toggleIssue(c.id, issue.id)} style={{ cursor: "pointer", display: "flex" }} aria-label={issue.resolved ? "Mark as open" : "Mark as resolved"}>
-                  {issue.resolved ? <CheckCircle2 size={15} color="var(--accent)" /> : <Circle size={15} color="var(--muted-2)" />}
-                </span>
-                <span style={{ flex: 1 }}>{issue.text}</span>
-                {issue.resolved && <span className="resolved-badge">Resolved</span>}
-                <button className="icon-btn danger" onClick={() => deleteIssue(c.id, issue.id)} aria-label="Delete issue">
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            ))}
-            <IssueAdder onAdd={(text) => addIssue(c.id, text)} />
           </div>
 
           <div className="section">

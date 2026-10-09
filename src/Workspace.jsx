@@ -423,7 +423,14 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           {mainView === "trash" && <TrashPanel isAdmin={isAdmin} onChanged={loadClients} />}
           {mainView === "product" && <ProductWorkspace key={productInitialTab} session={session} initialTab={productInitialTab} />}
           {mainView === "dashboard" && (
-            <Dashboard allClients={clients} filtered={filtered} onSelect={selectClient} onAddClient={addClient} />
+            <Dashboard
+              allClients={clients}
+              filtered={filtered}
+              onSelect={selectClient}
+              onAddClient={addClient}
+              updateClient={updateClient}
+              toggleIssue={toggleIssue}
+            />
           )}
           {mainView === "schedule" && (
             <SchedulePanel clients={clients} session={session} onOpenClient={(id) => { setTopNavTab("clients"); selectClient(id); }} />

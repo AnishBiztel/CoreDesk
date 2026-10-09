@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { LayoutGrid, Table2, Download, AlertTriangle, ChevronRight } from "lucide-react";
-import { STAGES, STAGE_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
+import { LayoutGrid, Table2, Download, AlertTriangle, ChevronRight, Check, MessageCircle } from "lucide-react";
+import { STAGES, STAGE_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS, STALE_DAYS } from "../lib/constants";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
 import { computeHealthScore } from "../lib/health";
 import ProjectStatusChart from "./ProjectStatusChart";
@@ -9,7 +9,7 @@ function stageDuration(c) {
   return daysSince(c.stageEnteredAt);
 }
 
-export default function Dashboard({ allClients, filtered, onSelect, onAddClient, initialView }) {
+export default function Dashboard({ allClients, filtered, onSelect, onAddClient, initialView, updateClient, toggleIssue }) {
   const [view, setView] = useState(initialView || "kanban");
   const [sortKey, setSortKey] = useState("updatedAt");
   const [sortDir, setSortDir] = useState("desc");
@@ -158,17 +158,56 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
             <span className="attention-panel-count">{needsAttention.length}</span>
           </div>
           <div className="attention-list">
-            {needsAttention.map(({ client: c, health }) => (
-              <div className="attention-row" key={c.id} onClick={() => onSelect(c.id)}>
-                <span className="health-badge" data-band={health.band}>{health.label} · {health.score}</span>
-                <span className="attention-row-name">
-                  {c.name || "Untitled client"}
-                  {c.departmentName && <span className="attention-row-dept"> — {c.departmentName}</span>}
-                </span>
-                <span className="attention-row-reason">{health.reasons.join(" · ")}</span>
-                <ChevronRight size={14} className="attention-row-arrow" />
-              </div>
-            ))}
+            {needsAttention.map(({ client: c, health }) => {
+              const openIssues = c.issues.filter((i) => !i.resolved);
+              const overdueDays = c.nextActionDate && isOverdue(c.nextActionDate) ? daysSince(c.nextActionDate) : null;
+              const sinceContact = c.lastContact ? daysSince(c.lastContact) : null;
+              return (
+                <div className="attention-row" key={c.id} onClick={() => onSelect(c.id)}>
+                  <span className="health-badge" data-band={health.band}>{health.label} · {health.score}</span>
+                  <div className="attention-row-main">
+                    <span className="attention-row-name">
+                      {c.name || "Untitled client"}
+                      {c.departmentName && <span className="attention-row-dept"> — {c.departmentName}</span>}
+                    </span>
+                    <div className="attention-row-chips">
+                      {health.reasons.map((reason, i) => (
+                        <span className="attn-chip" key={i}>{reason}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="attention-row-actions">
+                    {openIssues.length === 1 && (
+                      <button
+                        className="attn-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleIssue(c.id, openIssues[0].id);
+                        }}
+                        title={openIssues[0].text}
+                      >
+                        <Check size={12} /> Resolve
+                      </button>
+                    )}
+                    {sinceContact !== null && sinceContact > STALE_DAYS && (
+                      <button
+                        className="attn-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateClient(c.id, { lastContact: new Date().toISOString() }, { action: "contact_logged", detail: "logged contact from the dashboard" });
+                        }}
+                      >
+                        <MessageCircle size={12} /> Log contact
+                      </button>
+                    )}
+                    {overdueDays !== null && (
+                      <span className="attn-overdue-flag">{overdueDays}d overdue</span>
+                    )}
+                  </div>
+                  <ChevronRight size={14} className="attention-row-arrow" />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
