@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import {
-  ChevronRight, ChevronDown, CheckCircle2, AlertCircle, Trash2, FileText,
+  ChevronRight, ChevronDown, AlertCircle, Trash2, FileText,
   LayoutGrid, Rocket, Check, ClipboardList, Paperclip, History, Download, Plus, Calendar,
-  Eye, RotateCcw, User, Briefcase, Clock, Flag,
+  RotateCcw,
 } from "lucide-react";
 import { STAGES, SPEC_STATUSES, PRIORITIES, STAGE_COLORS, SPEC_COLORS, PRIORITY_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 
@@ -19,7 +19,7 @@ function openDatePicker(ref) {
   }
   el.focus();
 }
-import { handleEnterSave, isOverdue, daysSince, timeAgo, initials } from "../lib/helpers";
+import { handleEnterSave, isOverdue, daysSince, timeAgo } from "../lib/helpers";
 import { computeHealthScore } from "../lib/health";
 import IssueAdder from "./IssueAdder";
 import CommentThread from "./CommentThread";
@@ -93,11 +93,11 @@ export default function ClientDetail({
         <div className="cd-header-actions">
           {!c.churned && (
             <span
-              className="health-badge-lg"
+              className="health-badge"
               data-band={health.band}
               title={health.reasons.length ? health.reasons.join(", ") : "No risk signals"}
             >
-              <Eye size={13} /> {health.label} #{health.score}
+              {health.label} · {health.score}
             </span>
           )}
           <button type="button" className={"btn btn-sm" + (c.churned ? " btn-primary" : "")} onClick={() => updateClient(c.id, { churned: !c.churned })}>
@@ -125,85 +125,72 @@ export default function ClientDetail({
         )}
       </div>
 
-      <div className="stage-pipeline-card">
-        <div className="stage-pipeline-head">
-          <span className="stage-pipeline-title">Stage pipeline lifecycle</span>
-          {!c.churned && <span className="stage-pipeline-step">Step {currentIdx + 1} of {STAGES.length}</span>}
-        </div>
-        <div className="stage-pipeline-row">
-          {STAGES.map((stage, i) => {
-            const done = i < currentIdx;
-            const isCurrent = i === currentIdx && !c.churned;
-            return (
-              <div
-                className={"stage-pipeline-cell" + (done ? " done" : "") + (isCurrent ? " current" : "")}
-                key={stage}
-                onClick={() => updateClient(c.id, { stage, churned: false })}
-                title={`Set stage to ${stage}`}
-              >
-                <div className="stage-pipeline-cell-top">
-                  {done ? <CheckCircle2 size={13} /> : isCurrent ? <span className="stage-pipeline-dot" /> : null}
-                  <span className="stage-pipeline-num">Stage {String(i + 1).padStart(2, "0")}</span>
-                </div>
-                <div className="stage-pipeline-name">{stage}</div>
-                <div className="stage-pipeline-bar">
-                  <div className="stage-pipeline-bar-fill" style={{ width: done ? "100%" : isCurrent ? "45%" : "0%" }} />
-                </div>
+      <div className="pipeline">
+        {STAGES.map((stage, i) => {
+          const isDone = i < currentIdx || (i === currentIdx && !c.churned);
+          const isCurrent = i === currentIdx;
+          return (
+            <div className="pipeline-node-wrap" key={stage} style={{ flex: 1 }}>
+              <div className="pipeline-node" onClick={() => updateClient(c.id, { stage, churned: false })}>
+                <div className={"pipeline-dot" + (isDone ? " done" : "") + (isCurrent ? " current" : "")} />
+                <div className={"pipeline-label" + (isCurrent ? " active" : "")}>{stage}</div>
               </div>
-            );
-          })}
-        </div>
+              {i < STAGES.length - 1 && (
+                <div className={"pipeline-track" + (i < currentIdx - 1 ? " done" : i === currentIdx - 1 ? " active" : "")} />
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="cd-info-grid">
-        <div className="cd-info-card">
-          <div className="cd-info-label"><User size={12} /> Primary contact</div>
-          <div className="cd-info-with-avatar">
-            <span className="cd-avatar">{initials(c.contact)}</span>
+      <div className="cd-record-panel">
+        <div className="cd-record-grid">
+          <div className="cd-field">
+            <div className="cd-field-label">Primary Contact</div>
             <DebouncedField
-              className="cd-info-input"
+              className="cd-field-input"
               placeholder="Name, role"
               value={c.contact}
               onCommit={(v) => updateClient(c.id, { contact: v })}
               onKeyDown={handleEnterSave}
             />
           </div>
-        </div>
-        <div className="cd-info-card">
-          <div className="cd-info-label"><Briefcase size={12} /> Industry &amp; use case</div>
-          <DebouncedField
-            className="cd-info-input cd-info-input-lg"
-            placeholder="e.g. Automotive — AI visual supervisor"
-            value={c.industry}
-            onCommit={(v) => updateClient(c.id, { industry: v })}
-            onKeyDown={handleEnterSave}
-          />
-        </div>
-        <div className="cd-info-card">
-          <div className="cd-info-label"><Clock size={12} /> Last contact date</div>
-          <div className="date-field">
-            <input ref={lastContactRef} type="date" value={c.lastContact} onChange={(e) => updateClient(c.id, { lastContact: e.target.value })} />
-            <button type="button" className="date-field-btn" onClick={() => openDatePicker(lastContactRef)} title="Open calendar">
-              <Calendar size={13} />
-            </button>
+          <div className="cd-field">
+            <div className="cd-field-label">Industry &amp; Use Case</div>
+            <DebouncedField
+              className="cd-field-input"
+              placeholder="e.g. Automotive — AI visual supervisor"
+              value={c.industry}
+              onCommit={(v) => updateClient(c.id, { industry: v })}
+              onKeyDown={handleEnterSave}
+            />
           </div>
-          {sinceContact !== null && <div className="cd-info-sub">{sinceContact === 0 ? "today" : `${sinceContact} day${sinceContact === 1 ? "" : "s"} ago`}</div>}
-        </div>
-        <div className="cd-info-card">
-          <div className="cd-info-label"><Flag size={12} /> Priority level</div>
-          <div className="cd-priority-row">
-            <span className="priority-dot" style={{ background: PRIORITY_COLORS[c.priority] }} />
-            <select className="cd-priority-select" value={c.priority || "Medium"} onChange={(e) => updateClient(c.id, { priority: e.target.value })}>
-              {PRIORITIES.map((p) => (
-                <option key={p} value={p}>{p} priority</option>
-              ))}
-            </select>
-            {tierLabel && <span className="badge badge-muted">{tierLabel}</span>}
+          <div className="cd-field">
+            <div className="cd-field-label">Last Contact Date</div>
+            <div className="date-field">
+              <input ref={lastContactRef} type="date" value={c.lastContact} onChange={(e) => updateClient(c.id, { lastContact: e.target.value })} />
+              <button type="button" className="date-field-btn" onClick={() => openDatePicker(lastContactRef)} title="Open calendar">
+                <Calendar size={13} />
+              </button>
+            </div>
+            {sinceContact !== null && <div className="cd-field-sub">{sinceContact === 0 ? "today" : `${sinceContact} day${sinceContact === 1 ? "" : "s"} ago`}</div>}
+          </div>
+          <div className="cd-field">
+            <div className="cd-field-label">Priority Level</div>
+            <div className="cd-priority-row">
+              <span className="priority-dot" style={{ background: PRIORITY_COLORS[c.priority] }} />
+              <select className="cd-priority-select" value={c.priority || "Medium"} onChange={(e) => updateClient(c.id, { priority: e.target.value })}>
+                {PRIORITIES.map((p) => (
+                  <option key={p} value={p}>{p} priority</option>
+                ))}
+              </select>
+              {tierLabel && <span className="badge badge-muted">{tierLabel}</span>}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="overview-box cd-overview-card">
+      <div className="overview-box">
         <label>High-level overview &amp; specifications</label>
         <DebouncedField
           as="textarea"
@@ -284,7 +271,7 @@ export default function ClientDetail({
 
               <div className="cd-next-action-stats">
                 <div>
-                  <div className="cd-info-label">Target deadline</div>
+                  <div className="cd-field-label">Due date</div>
                   <div className="date-field">
                     <input ref={nextActionDateRef} type="date" value={c.nextActionDate} onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })} />
                     <button type="button" className="date-field-btn" onClick={() => openDatePicker(nextActionDateRef)} title="Open calendar">
@@ -294,7 +281,7 @@ export default function ClientDetail({
                 </div>
                 {overdueDays !== null && (
                   <div>
-                    <div className="cd-info-label">Days overdue</div>
+                    <div className="cd-field-label">Days overdue</div>
                     <div className="cd-overdue-num">{overdueDays}</div>
                   </div>
                 )}
