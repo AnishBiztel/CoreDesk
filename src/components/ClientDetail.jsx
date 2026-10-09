@@ -62,7 +62,6 @@ export default function ClientDetail({
   const currentIdx = STAGES.indexOf(c.stage);
   const tierLabel = { High: "TIER 1", Medium: "TIER 2", Low: "TIER 3" }[c.priority] || "";
   const sinceContact = c.lastContact ? daysSince(c.lastContact) : null;
-  const accountCode = (c.id || "").replace(/-/g, "").slice(0, 6).toUpperCase();
   const openIssues = c.issues.filter((i) => !i.resolved);
   const resolvedIssues = c.issues.filter((i) => i.resolved);
   const overdueNextAction = isOverdue(c.nextActionDate) && !c.churned;
@@ -87,7 +86,16 @@ export default function ClientDetail({
           <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
             {(c.churned ? "Churned" : c.stage).toUpperCase()} STAGE
           </span>
-          {accountCode && <span className="cd-account-id">Account ID: #{accountCode}</span>}
+          <span className="cd-account-id">
+            Account ID:{" "}
+            <DebouncedField
+              className="cd-account-id-input"
+              placeholder="e.g. STL-001"
+              value={c.accountCode}
+              onCommit={(v) => updateClient(c.id, { accountCode: v })}
+              onKeyDown={handleEnterSave}
+            />
+          </span>
         </div>
 
         <div className="cd-header-actions">

@@ -38,6 +38,7 @@ export function emptyClient(templates, companyId, departmentName) {
     deletedAt: null,
     companyId: companyId || null,
     departmentName: departmentName || "",
+    accountCode: "",
   };
 }
 
@@ -78,6 +79,7 @@ export function fromDb(row) {
     createdBy: row.created_by || null,
     companyId: row.company_id || null,
     departmentName: row.department_name || "",
+    accountCode: row.account_code || "",
   };
 }
 
@@ -101,6 +103,7 @@ export function toDb(client) {
     updated_at: new Date().toISOString(),
     company_id: client.companyId || null,
     department_name: client.departmentName || "",
+    account_code: client.accountCode || "",
   };
 }
 
@@ -114,6 +117,7 @@ export function ensureShape(client) {
     stageEnteredAt: client.stageEnteredAt || client.createdAt || new Date().toISOString(),
     companyId: client.companyId || null,
     departmentName: client.departmentName || "",
+    accountCode: client.accountCode || "",
   };
 }
 

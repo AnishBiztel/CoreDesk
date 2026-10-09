@@ -451,7 +451,13 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .cd-header { margin-bottom: 18px; }
 .cd-header-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .cd-header-top .name-input { width: auto; flex: 1; min-width: 180px; }
-.cd-account-id { font-family: var(--mono); font-size: 11px; color: var(--muted-2); white-space: nowrap; }
+.cd-account-id { font-family: var(--mono); font-size: 11px; color: var(--muted-2); white-space: nowrap; display: inline-flex; align-items: center; }
+.cd-account-id-input {
+  font-family: var(--mono); font-size: 11px; color: var(--muted-2); background: none; border: none;
+  border-bottom: 1px dashed transparent; outline: none; padding: 0; width: 70px;
+}
+.cd-account-id-input:hover, .cd-account-id-input:focus { border-bottom-color: var(--line-bright); color: var(--ink); }
+.cd-account-id-input::placeholder { color: var(--muted-2); }
 .cd-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .cd-header-sub { margin-top: 8px; font-size: 12px; color: var(--muted-2); font-family: var(--mono); }
 
