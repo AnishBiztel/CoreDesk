@@ -21,6 +21,7 @@ import AddDepartmentModal from "./components/AddDepartmentModal";
 import ProductWorkspace from "./components/product/ProductWorkspace";
 import TopNav from "./components/TopNav";
 import Logo from "./components/Logo";
+import RightRail from "./components/RightRail";
 
 export default function Workspace({ session, profile, onOpenSettings }) {
   const [clients, setClients] = useState(null);
@@ -458,6 +459,10 @@ export default function Workspace({ session, profile, onOpenSettings }) {
             </div>
           )}
         </div>
+
+        {(mainView === "dashboard" || mainView === "clientsList" || mainView === "client") && (
+          <RightRail allClients={clients} />
+        )}
       </div>
 
       {addDeptFor && (

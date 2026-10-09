@@ -21,11 +21,7 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
       (sum, c) => sum + c.specs.filter((s) => s.status === "Draft" || s.status === "Reviewed with Eng").length,
       0
     );
-    // Pipeline velocity: share of active clients that have moved past the first
-    // stage — a rough read on how much of the pipeline is actually progressing.
-    const pastLead = active.filter((c) => c.stage !== "Lead").length;
-    const velocity = active.length ? Math.round((pastLead / active.length) * 100) : 0;
-    return { total: allClients.length, active: active.length, issues, pending, velocity };
+    return { total: allClients.length, active: active.length, issues, pending };
   }, [allClients]);
 
   // "Needs attention": every active client whose health score has dropped into
@@ -149,11 +145,6 @@ export default function Dashboard({ allClients, filtered, onSelect, onAddClient,
           <div className="kpi-num">{kpis.pending}</div>
           <div className="kpi-label">Pending</div>
           <div className="kpi-bar" style={{ background: "var(--amber)" }} />
-        </div>
-        <div className="kpi-card kpi-card-accent">
-          <div className="kpi-num">{kpis.velocity}%</div>
-          <div className="kpi-label">Pipeline velocity</div>
-          <div className="kpi-bar" style={{ background: "var(--accent)" }} />
         </div>
       </div>
 
