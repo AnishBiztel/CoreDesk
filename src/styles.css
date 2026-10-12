@@ -183,7 +183,8 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 }
 
 /* ---------- App shell ---------- */
-.app-shell { display: flex; height: 100vh; overflow: hidden; }
+.app-root { display: flex; height: 100vh; overflow: hidden; }
+.app-shell { display: flex; flex: 1; min-width: 0; height: 100vh; overflow: hidden; }
 
 .navrail {
   width: 60px; flex-shrink: 0; background: var(--panel);
@@ -210,7 +211,40 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .navrail-avatar {
   width: 32px; height: 32px; border-radius: 50%; background: var(--panel-3);
   border: 1px solid var(--line); color: var(--ink); font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+}
+
+/* ---------- Wide left nav rail (replaces the old horizontal top nav) ---------- */
+.navrail.navrail-wide {
+  width: 212px; align-items: stretch; padding: 16px 12px; gap: 4px;
+}
+.navrail-brand { display: flex; align-items: center; gap: 9px; padding: 4px 6px 14px; flex-shrink: 0; }
+.navrail-brand-name { font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
+.navrail-new-btn { width: 100%; justify-content: center; margin-bottom: 12px; }
+.navrail-items { display: flex; flex-direction: column; gap: 1px; }
+.navrail-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px;
+  border-radius: var(--radius-sm); border: 1px solid transparent; background: none;
+  color: var(--muted); font-size: 13px; font-weight: 500; text-align: left; cursor: pointer;
+  font-family: var(--font); transition: all 0.15s var(--ease); white-space: nowrap;
+}
+.navrail-item:hover { background: var(--panel-2); color: var(--ink); }
+.navrail-item.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.navrail-footer {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 8px;
+  border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--panel-2);
+  cursor: pointer; font-family: var(--font); flex-shrink: 0;
+}
+.navrail-footer:hover { border-color: var(--line-bright); }
+.navrail-footer-email {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 11.5px; color: var(--muted); text-align: left;
+}
+.navrail-footer svg { color: var(--muted-2); flex-shrink: 0; }
+.navrail-footer-avatar {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--panel-3);
+  border: 1px solid var(--line); color: var(--ink); font-size: 10.5px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 
 .sidebar {
@@ -651,7 +685,7 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .alert-notice { background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent-ink); }
 
 @media (max-width: 860px) {
-  .sidebar { position: fixed; z-index: 20; left: 60px; height: 100vh; }
+  .sidebar { position: fixed; z-index: 20; left: 212px; height: 100vh; }
   .main-inner { padding: 24px 18px 60px; }
 }
 
@@ -917,8 +951,8 @@ button, input, textarea, select { transition: border-color .18s ease, background
   .sidebar { width: 285px; }
 }
 @media (max-width: 860px) {
-  .navrail { width: 58px; }
-  .sidebar { left: 58px; }
+  .navrail:not(.navrail-wide) { width: 58px; }
+  .sidebar { left: 212px; }
   .main::before { inset-left: 343px; }
   .main-inner { padding: 24px 18px 50px; }
   .page-title { font-size: 21px; }
@@ -1133,56 +1167,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ---------- Global Top Navigation ---------- */
-.topnav {
-  height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 20px;
-  padding: 0 18px; background: var(--panel); border-bottom: 1px solid var(--line-bright);
-  position: relative; z-index: 10;
-}
-.topnav-brand { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
-.topnav-logo {
-  width: 30px; height: 30px; border-radius: var(--radius-sm); background: var(--accent);
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 12px; flex-shrink: 0;
-}
-.topnav-brand-name { font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
-.topnav-tabs { display: flex; align-items: center; gap: 2px; flex: 1; overflow-x: auto; }
-.topnav-tab {
-  display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: var(--radius-sm);
-  border: none; background: none; color: var(--muted); font-size: 13px; font-weight: 500;
-  cursor: pointer; white-space: nowrap; font-family: var(--font); transition: all 0.15s var(--ease);
-}
-.topnav-tab:hover { background: var(--panel-2); color: var(--ink); }
-.topnav-tab.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
-.topnav-utility { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.topnav-search {
-  display: flex; align-items: center; gap: 6px; background: var(--panel-2); border: 1px solid var(--line);
-  border-radius: var(--radius-sm); padding: 6px 10px; width: 170px;
-}
-.topnav-search input { border: none; outline: none; background: none; color: var(--ink); font-size: 12.5px; width: 100%; }
-.topnav-search input::placeholder { color: var(--muted-2); }
-.topnav-icon-btn {
-  position: relative; border: none; background: none; color: var(--muted); cursor: pointer;
-  padding: 7px; border-radius: var(--radius-sm); display: flex;
-}
-.topnav-icon-btn:hover { background: var(--panel-2); color: var(--ink); }
-.topnav-badge {
-  position: absolute; top: 2px; right: 2px; background: var(--red); color: #fff;
-  font-size: 9px; font-weight: 700; border-radius: 999px; min-width: 15px; height: 15px;
-  display: flex; align-items: center; justify-content: center; padding: 0 3px; font-family: var(--mono);
-}
-.topnav-clock { font-size: 11.5px; color: var(--muted-2); font-family: var(--mono); white-space: nowrap; }
-.topnav-avatar {
-  width: 32px; height: 32px; border-radius: 50%; background: var(--panel-3); border: 1px solid var(--line-bright);
-  color: var(--ink); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-@media (max-width: 1100px) {
-  .topnav-search, .topnav-clock { display: none; }
-}
-
-/* ---------- App shell without the old icon nav rail ---------- */
-.app-shell-no-navrail { height: calc(100vh - 56px); }
+/* ---------- Global Top Navigation (retired — see .navrail-wide above) ---------- */
 
 /* ---------- Sidebar nav sections (Projects / Analytics & Assets) ---------- */
 .sidebar-nav-group { padding: 10px 10px 4px; }

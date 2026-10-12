@@ -77,15 +77,20 @@ export default function Workspace({ session, profile, onOpenSettings }) {
 
   if (clients === null) {
     return (
-      <div className="app-shell">
-        <div className="navrail">
-          <Logo size={32} />
+      <div className="app-root">
+        <div className="navrail navrail-wide">
+          <div className="navrail-brand">
+            <Logo size={24} />
+            <span className="navrail-brand-name">CoreDesk</span>
+          </div>
         </div>
-        <div className="sidebar">
-          <SidebarSkeleton />
-        </div>
-        <div className="main">
-          <DashboardSkeleton />
+        <div className="app-shell">
+          <div className="sidebar">
+            <SidebarSkeleton />
+          </div>
+          <div className="main">
+            <DashboardSkeleton />
+          </div>
         </div>
       </div>
     );
@@ -384,7 +389,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
 
 
   return (
-    <>
+    <div className="app-root">
       <TopNav
         activeTab={topNavTab}
         onNavigate={handleTopNavigate}
@@ -392,7 +397,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
         onOpenSettings={onOpenSettings}
         onNewClient={addClient}
       />
-      <div className="app-shell app-shell-no-navrail">
+      <div className="app-shell">
         {mainView !== "trash" && mainView !== "product" && mainView !== "schedule" && (
           <Sidebar
             filtered={filtered}
@@ -479,6 +484,6 @@ export default function Workspace({ session, profile, onOpenSettings }) {
           onClose={() => setAddDeptFor(null)}
         />
       )}
-    </>
+    </div>
   );
 }
