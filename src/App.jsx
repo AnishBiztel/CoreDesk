@@ -8,6 +8,7 @@ import { ToastProvider } from "./components/Toast";
 import { ConfirmProvider } from "./components/ConfirmDialog";
 import { SkeletonLine } from "./components/Skeleton";
 import { ThemeProvider } from "./lib/ThemeContext";
+import { FontProvider } from "./lib/FontContext";
 import "./styles.css";
 
 function AppInner() {
@@ -54,11 +55,13 @@ function AppInner() {
 export default function App() {
   return (
     <ThemeProvider>
-      <ToastProvider>
-        <ConfirmProvider>
-          <AppInner />
-        </ConfirmProvider>
-      </ToastProvider>
+      <FontProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <AppInner />
+          </ConfirmProvider>
+        </ToastProvider>
+      </FontProvider>
     </ThemeProvider>
   );
 }

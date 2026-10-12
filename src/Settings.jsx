@@ -6,9 +6,12 @@ import { DEFAULT_GATHERING_QUESTIONS, DEFAULT_GTD_STEPS } from "./lib/constants"
 import { useToast } from "./components/Toast";
 import ThemeToggle from "./components/ThemeToggle";
 import { useTheme } from "./lib/ThemeContext";
+import FontToggle from "./components/FontToggle";
+import { useFont } from "./lib/FontContext";
 
 export default function Settings({ session, profile, onBack }) {
   const { theme } = useTheme();
+  const { font } = useFont();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -101,6 +104,13 @@ export default function Settings({ session, profile, onBack }) {
               <div className="appearance-row-sub">Saved to this browser and applied automatically next time you visit.</div>
             </div>
             <ThemeToggle />
+          </div>
+          <div className="appearance-row appearance-row-divider">
+            <div>
+              <div className="appearance-row-label">{font === "system-bold" ? "Bold system font" : "Default font"}</div>
+              <div className="appearance-row-sub">A bolder, rounder look across the whole app. Saved to this browser.</div>
+            </div>
+            <FontToggle />
           </div>
         </div>
 

@@ -1489,3 +1489,48 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .client-group-rename { display: flex; align-items: center; gap: 4px; flex: 1; }
 .client-group-rename .input { padding: 3px 7px; font-size: 11.5px; flex: 1; }
 .client-item-grouped { margin-left: 10px; padding-left: 10px; border-left: 2px solid var(--line); }
+
+/* =========================================================
+   FONT SWITCHER — Settings toggle between the default UI font
+   and a bold system-font look (SF Pro Bold on Apple devices,
+   Segoe UI Bold on Windows). Uses html[data-font=...] rather than
+   :root so it reliably outranks every other --font definition in
+   this file, in light or dark theme, regardless of source order.
+   ========================================================= */
+.appearance-row-divider { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+.font-toggle {
+  display: flex; gap: 2px; padding: 2px; border-radius: var(--radius-pill);
+  border: 1px solid var(--line-bright); background: var(--panel-3); flex-shrink: 0;
+}
+.font-toggle-opt {
+  border: none; background: none; color: var(--muted); font-family: var(--font);
+  font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: var(--radius-pill);
+  cursor: pointer; transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.font-toggle-opt:hover { color: var(--ink); }
+.font-toggle-opt.active { background: var(--accent); color: #fff; }
+
+html[data-font="system-bold"] {
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+}
+html[data-font="system-bold"] body {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+html[data-font="system-bold"] h1,
+html[data-font="system-bold"] h2,
+html[data-font="system-bold"] h3,
+html[data-font="system-bold"] .page-title,
+html[data-font="system-bold"] .cd-name,
+html[data-font="system-bold"] td,
+html[data-font="system-bold"] .navrail-item,
+html[data-font="system-bold"] .btn,
+html[data-font="system-bold"] .stat-num,
+html[data-font="system-bold"] .kpi-num {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+html[data-font="system-bold"] th {
+  font-weight: 700;
+}
