@@ -1347,13 +1347,12 @@ button, input, textarea, select { transition: border-color .18s ease, background
 /* colour tones (event chips, blocks, legend swatches) */
 .cal-ev {
   --ev: #64748B; --ev-bg: #F1F5F9; --ev-fg: #334155; --ev-bd: #CBD5E1;
-  background: color-mix(in srgb, var(--ev) 24%, var(--panel));
-  color: var(--ink);
-  border: 1px solid color-mix(in srgb, var(--ev) 40%, transparent);
-  border-left: 3px solid var(--ev);
+  background: var(--ev);
+  color: #fff;
+  border: 1px solid transparent;
   font-family: var(--font);
 }
-[data-theme="light"] .cal-ev { background: var(--ev-bg); color: var(--ev-fg); border-color: var(--ev-bd); border-left-color: var(--ev); }
+[data-theme="light"] .cal-ev { background: var(--ev-bg); color: var(--ev-fg); border-color: var(--ev-bd); }
 .cal-ev.done .cal-chip-title, .cal-ev.done .cal-block-title { text-decoration: line-through; opacity: 0.6; }
 .cal-ev[data-tone="Lead"], .cal-swatch[data-tone="Lead"] { --ev: #8B8FA3; }
 .cal-ev[data-tone="Discovery"], .cal-swatch[data-tone="Discovery"] { --ev: #7C6FE0; }
