@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { LayoutGrid } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import {
   fetchClients, insertClient, updateClientRow, softDeleteClient, bulkInsertClients,
@@ -11,7 +10,6 @@ import { refreshWhenIdle } from "./lib/editGuard";
 import { useToast } from "./components/Toast";
 import { useConfirm } from "./components/ConfirmDialog";
 import { SidebarSkeleton, DashboardSkeleton } from "./components/Skeleton";
-import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import ClientsList from "./components/ClientsList";
 import SchedulePanel from "./components/schedule/SchedulePanel";
@@ -22,6 +20,7 @@ import ProductWorkspace from "./components/product/ProductWorkspace";
 import TopNav from "./components/TopNav";
 import Logo from "./components/Logo";
 import RightRail from "./components/RightRail";
+import ClientDrawer from "./components/ClientDrawer";
 
 export default function Workspace({ session, profile, onOpenSettings }) {
   const [clients, setClients] = useState(null);
@@ -127,8 +126,9 @@ export default function Workspace({ session, profile, onOpenSettings }) {
   );
 
   function selectClient(id) {
+    // Opens the client in the slide-over drawer — doesn't navigate away from
+    // whatever table/list view is currently showing.
     setSelectedId(id);
-    setMainView("client");
   }
 
   async function updateClient(id, patch, activity) {
@@ -396,34 +396,15 @@ export default function Workspace({ session, profile, onOpenSettings }) {
         userEmail={userEmail}
         onOpenSettings={onOpenSettings}
         onNewClient={addClient}
+        syncState={saveState}
+        onExport={exportData}
+        onImport={importData}
+        fileInputRef={fileInputRef}
+        onOpenTrash={() => { setMainView("trash"); setSelectedId(null); }}
+        trashActive={mainView === "trash"}
+        onLogout={handleLogout}
       />
       <div className="app-shell">
-        {(mainView === "clientsList" || mainView === "client") && (
-          <Sidebar
-            filtered={filtered}
-            companiesById={companiesById}
-            onRenameCompany={renameCompany}
-            selectedId={selectedId}
-            onSelect={selectClient}
-            query={query}
-            setQuery={setQuery}
-            stageFilter={stageFilter}
-            setStageFilter={setStageFilter}
-            syncState={saveState}
-            onExport={exportData}
-            onImport={importData}
-            fileInputRef={fileInputRef}
-            totalClients={totalClients}
-            activeClients={activeClients}
-            openIssues={openIssues}
-            pendingSpecs={pendingSpecs}
-            onOpenTrash={() => { setMainView("trash"); setSelectedId(null); }}
-            onOpenSettings={onOpenSettings}
-            onLogout={handleLogout}
-            trashActive={mainView === "trash"}
-          />
-        )}
-
         <div className="main">
           {mainView === "trash" && <TrashPanel isAdmin={isAdmin} onChanged={loadClients} />}
           {mainView === "product" && <ProductWorkspace key={productInitialTab} session={session} initialTab={productInitialTab} />}
@@ -441,41 +422,45 @@ export default function Workspace({ session, profile, onOpenSettings }) {
             <SchedulePanel clients={clients} session={session} onOpenClient={(id) => { setTopNavTab("clients"); selectClient(id); }} />
           )}
           {mainView === "clientsList" && (
-            <ClientsList filtered={filtered} companiesById={companiesById} onSelect={selectClient} onAddClient={addClient} />
-          )}
-          {mainView === "client" && selected && (
-            <ClientDetail
-              client={selected}
-              userEmail={userEmail}
-              isAdmin={isAdmin}
-              updateClient={updateClient}
-              addSpec={addSpec}
-              updateSpec={updateSpec}
-              deleteSpec={deleteSpec}
-              addGatheringQuestion={addGatheringQuestion}
-              updateGatheringItem={updateGatheringItem}
-              deleteGatheringItem={deleteGatheringItem}
-              addIssue={addIssue}
-              toggleIssue={toggleIssue}
-              deleteIssue={deleteIssue}
-              updateGtdStep={updateGtdStep}
-              toggleGtdStep={toggleGtdStep}
-              onDeleteClient={deleteClient}
-              onAddDepartment={openAddDepartment}
+            <ClientsList
+              filtered={filtered}
+              companiesById={companiesById}
+              onSelect={selectClient}
+              onAddClient={addClient}
+              query={query}
+              setQuery={setQuery}
+              stageFilter={stageFilter}
+              setStageFilter={setStageFilter}
             />
-          )}
-          {mainView === "client" && !selected && (
-            <div className="empty-main">
-              <LayoutGrid size={28} strokeWidth={1.5} />
-              <div>Select a client from the sidebar, or add a new one.</div>
-            </div>
           )}
         </div>
 
-        {(mainView === "dashboard" || mainView === "clientsList" || mainView === "client") && (
-          <RightRail allClients={clients} />
-        )}
+        {mainView === "dashboard" && <RightRail allClients={clients} />}
       </div>
+
+      <ClientDrawer open={!!selected} onClose={() => setSelectedId(null)}>
+        {selected && (
+          <ClientDetail
+            client={selected}
+            userEmail={userEmail}
+            isAdmin={isAdmin}
+            updateClient={updateClient}
+            addSpec={addSpec}
+            updateSpec={updateSpec}
+            deleteSpec={deleteSpec}
+            addGatheringQuestion={addGatheringQuestion}
+            updateGatheringItem={updateGatheringItem}
+            deleteGatheringItem={deleteGatheringItem}
+            addIssue={addIssue}
+            toggleIssue={toggleIssue}
+            deleteIssue={deleteIssue}
+            updateGtdStep={updateGtdStep}
+            toggleGtdStep={toggleGtdStep}
+            onDeleteClient={(id) => { deleteClient(id); setSelectedId(null); }}
+            onAddDepartment={openAddDepartment}
+          />
+        )}
+      </ClientDrawer>
 
       {addDeptFor && (
         <AddDepartmentModal

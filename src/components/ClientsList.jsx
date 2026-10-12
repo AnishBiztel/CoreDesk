@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
 import { computeHealthScore } from "../lib/health";
+import { STAGES } from "../lib/constants";
 
 function stageDuration(c) {
   return daysSince(c.stageEnteredAt);
 }
 
-export default function ClientsList({ filtered, onSelect, onAddClient }) {
+export default function ClientsList({ filtered, onSelect, onAddClient, query, setQuery, stageFilter, setStageFilter }) {
   const [sortKey, setSortKey] = useState("updatedAt");
   const [sortDir, setSortDir] = useState("desc");
 
@@ -92,6 +93,18 @@ export default function ClientsList({ filtered, onSelect, onAddClient }) {
           <button className="btn btn-sm" onClick={exportCSV}>
             <Download size={13} /> Export CSV
           </button>
+        </div>
+      </div>
+
+      <div className="list-toolbar">
+        <div className="list-toolbar-search">
+          <Search size={14} color="var(--muted-2)" />
+          <input placeholder="Search clients or specs" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        <div className="list-toolbar-chips">
+          {["All", ...STAGES, "Churned"].map((s) => (
+            <button key={s} className={"chip" + (stageFilter === s ? " active" : "")} onClick={() => setStageFilter(s)}>{s}</button>
+          ))}
         </div>
       </div>
 

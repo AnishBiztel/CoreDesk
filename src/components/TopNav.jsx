@@ -1,5 +1,5 @@
 import Logo from "./Logo";
-import { LayoutGrid, Users, Map, Cpu, Plus, CalendarDays, Settings } from "lucide-react";
+import { LayoutGrid, Users, Map, Cpu, Plus, CalendarDays, Settings, Trash2, Download, Upload, LogOut } from "lucide-react";
 import { initials } from "../lib/helpers";
 
 const TABS = [
@@ -10,13 +10,31 @@ const TABS = [
   { key: "hardware", label: "Hardware / BOM", icon: Cpu },
 ];
 
-export default function TopNav({ activeTab, onNavigate, userEmail, onOpenSettings, onNewClient }) {
+export default function TopNav({
+  activeTab,
+  onNavigate,
+  userEmail,
+  onOpenSettings,
+  onNewClient,
+  syncState,
+  onExport,
+  onImport,
+  fileInputRef,
+  onOpenTrash,
+  trashActive,
+  onLogout,
+}) {
   return (
     <aside className="navrail navrail-wide">
       <div className="navrail-brand">
         <Logo size={24} />
         <span className="navrail-brand-name">CoreDesk</span>
       </div>
+      {syncState ? (
+        <div className={"sync-state navrail-sync" + (syncState === "error" ? " error" : "")}>
+          {syncState === "saving" ? "syncing…" : syncState === "synced" ? "synced" : syncState === "error" ? "sync failed" : ""}
+        </div>
+      ) : null}
 
       <button className="btn btn-sm btn-primary navrail-new-btn" onClick={onNewClient}>
         <Plus size={13} /> New
@@ -39,6 +57,22 @@ export default function TopNav({ activeTab, onNavigate, userEmail, onOpenSetting
       </nav>
 
       <div className="navrail-spacer" />
+
+      <div className="navrail-utility" aria-label="Workspace actions">
+        <button className={"icon-btn" + (trashActive ? " active" : "")} aria-label="Trash" onClick={onOpenTrash}>
+          <Trash2 size={15} />
+        </button>
+        <button className="icon-btn" aria-label="Backup" onClick={onExport}>
+          <Download size={15} />
+        </button>
+        <button className="icon-btn" aria-label="Restore" onClick={() => fileInputRef.current.click()}>
+          <Upload size={15} />
+        </button>
+        <input ref={fileInputRef} type="file" accept="application/json" style={{ display: "none" }} onChange={onImport} />
+        <button className="icon-btn" aria-label="Sign out" onClick={onLogout}>
+          <LogOut size={15} />
+        </button>
+      </div>
 
       <button className="navrail-footer" onClick={onOpenSettings}>
         <span className="navrail-footer-avatar">{initials(userEmail)}</span>
