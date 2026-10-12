@@ -398,7 +398,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
         onNewClient={addClient}
       />
       <div className="app-shell">
-        {mainView !== "trash" && mainView !== "product" && mainView !== "schedule" && (
+        {(mainView === "clientsList" || mainView === "client") && (
           <Sidebar
             filtered={filtered}
             companiesById={companiesById}
