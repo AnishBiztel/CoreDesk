@@ -89,7 +89,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
           <h1 className="page-title">Clients</h1>
         </div>
         <div className="page-actions">
-          <button className="btn btn-primary btn-sm" onClick={onAddClient}>+ New client</button>
           <button className="btn btn-sm" onClick={exportCSV}>
             <Download size={13} /> Export CSV
           </button>

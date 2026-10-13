@@ -221,6 +221,13 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .navrail-brand { display: flex; align-items: center; gap: 9px; padding: 4px 6px 14px; flex-shrink: 0; }
 .navrail-brand-name { font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
 .navrail-new-btn { width: 100%; justify-content: center; margin-bottom: 12px; }
+/* Flat, merges with the sidebar — no separate blue call-to-action box here.
+   Compound selector so it beats the generic .btn-primary rule regardless of
+   source order (including the later "Enterprise SaaS visual system" block). */
+.navrail-new-btn.btn-primary {
+  background: var(--panel-3); border: 1px solid var(--line); color: var(--ink); box-shadow: none;
+}
+.navrail-new-btn.btn-primary:hover { background: var(--panel-4); border-color: var(--line-bright); box-shadow: none; }
 .navrail-items { display: flex; flex-direction: column; gap: 1px; }
 .navrail-item {
   display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px;
@@ -229,7 +236,7 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
   font-family: var(--font); transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease); white-space: nowrap;
 }
 .navrail-item:hover { background: var(--panel-2); color: var(--ink); }
-.navrail-item.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.navrail-item.active { background: var(--panel-3); border-color: transparent; color: var(--ink); font-weight: 600; }
 .navrail-footer {
   display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 8px;
   border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--panel-2);
@@ -261,8 +268,11 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
   display: flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: var(--radius-sm);
   padding: 8px 10px; background: var(--panel-2); width: 240px; flex-shrink: 0;
 }
-.list-toolbar-search input { border: none; outline: none; background: none; color: var(--ink); font-size: 12.5px; width: 100%; }
+.list-toolbar-search input { border: none; outline: none; background: none; color: var(--ink); font-size: 12.5px; width: 100%; box-shadow: none; }
 .list-toolbar-search input::placeholder { color: var(--muted-2); }
+/* Only the one bordered box — no added focus glow/halo around it. */
+.list-toolbar-search:focus-within { border-color: var(--line-bright); box-shadow: none; }
+.list-toolbar-search input:focus, .list-toolbar-search input:focus-visible { outline: none; box-shadow: none; }
 .list-toolbar-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 
 /* ---------- Slide-over drawer (master-detail pattern) ---------- */
