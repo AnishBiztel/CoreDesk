@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useDeferredValue } from "react";
 import { supabase } from "./supabaseClient";
 import {
   fetchClients, insertClient, updateClientRow, softDeleteClient, bulkInsertClients,
@@ -74,6 +74,37 @@ export default function Workspace({ session, profile, onOpenSettings }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Deferred so fast typing in the search box never waits on re-filtering/
+  // re-rendering the table — React keeps the input itself snappy and lets
+  // the (usually sub-millisecond, but not guaranteed) list update catch up
+  // a beat behind.
+  const deferredQuery = useDeferredValue(query);
+
+  const companiesById = useMemo(
+    () => Object.fromEntries(companies.map((co) => [co.id, co])),
+    [companies]
+  );
+
+  const filtered = useMemo(() => {
+    const q = deferredQuery.trim().toLowerCase();
+    return (clients || [])
+      .filter((c) => {
+        if (stageFilter === "All") return true;
+        if (stageFilter === "Churned") return c.churned;
+        return !c.churned && c.stage === stageFilter;
+      })
+      .filter((c) => {
+        if (!q) return true;
+        const companyName = companiesById[c.companyId]?.name || "";
+        const inClient = (c.name + " " + c.industry + " " + c.contact + " " + companyName + " " + c.departmentName).toLowerCase().includes(q);
+        const inSpecs = c.specs.some((s) => (s.problem + " " + s.constraints).toLowerCase().includes(q));
+        const inGathering = (c.gathering || []).some((g) => (g.question + " " + g.answer).toLowerCase().includes(q));
+        const inGtd = (c.gtd || []).some((g) => (g.label + " " + g.note).toLowerCase().includes(q));
+        return inClient || inSpecs || inGathering || inGtd;
+      })
+      .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+  }, [clients, stageFilter, deferredQuery, companiesById]);
+
   if (clients === null) {
     return (
       <div className="app-root">
@@ -96,26 +127,6 @@ export default function Workspace({ session, profile, onOpenSettings }) {
   }
 
   const selected = clients.find((c) => c.id === selectedId) || null;
-
-  const companiesById = Object.fromEntries(companies.map((co) => [co.id, co]));
-
-  const q = query.trim().toLowerCase();
-  const filtered = clients
-    .filter((c) => {
-      if (stageFilter === "All") return true;
-      if (stageFilter === "Churned") return c.churned;
-      return !c.churned && c.stage === stageFilter;
-    })
-    .filter((c) => {
-      if (!q) return true;
-      const companyName = companiesById[c.companyId]?.name || "";
-      const inClient = (c.name + " " + c.industry + " " + c.contact + " " + companyName + " " + c.departmentName).toLowerCase().includes(q);
-      const inSpecs = c.specs.some((s) => (s.problem + " " + s.constraints).toLowerCase().includes(q));
-      const inGathering = (c.gathering || []).some((g) => (g.question + " " + g.answer).toLowerCase().includes(q));
-      const inGtd = (c.gtd || []).some((g) => (g.label + " " + g.note).toLowerCase().includes(q));
-      return inClient || inSpecs || inGathering || inGtd;
-    })
-    .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
 
   const totalClients = clients.length;
   const activeClients = clients.filter((c) => !c.churned).length;

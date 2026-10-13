@@ -119,7 +119,7 @@ input, textarea, select {
 .icon-btn {
   border: none; background: none; cursor: pointer; color: var(--muted-2);
   padding: 5px; display: inline-flex; align-items: center; border-radius: var(--radius-sm);
-  transition: all 0.15s var(--ease);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
 }
 .icon-btn:hover { color: var(--ink); background: var(--panel-3); }
 .icon-btn.danger:hover { color: var(--red); background: var(--red-soft); }
@@ -226,7 +226,7 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
   display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px;
   border-radius: var(--radius-sm); border: 1px solid transparent; background: none;
   color: var(--muted); font-size: 13px; font-weight: 500; text-align: left; cursor: pointer;
-  font-family: var(--font); transition: all 0.15s var(--ease); white-space: nowrap;
+  font-family: var(--font); transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease); white-space: nowrap;
 }
 .navrail-item:hover { background: var(--panel-2); color: var(--ink); }
 .navrail-item.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
