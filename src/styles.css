@@ -365,15 +365,8 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .health-dot[data-band="critical"] { background: #D6544A; }
 .health-dot[data-band="churned"], .health-dot[data-band="unknown"] { background: #8B8FA3; }
 
-.health-badge { display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; padding: 2px 8px; min-width: 54px; height: 20px; border-radius: 4px; font-family: var(--font); border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; line-height: 1; }
-.health-badge[data-band="healthy"] { background: #2F9E6E; color: #fff; }
-.health-badge[data-band="watch"] { background: #D69E2E; color: #fff; }
-.health-badge[data-band="critical"] { background: #D6544A; color: #fff; }
-.health-badge[data-band="churned"], .health-badge[data-band="unknown"] { background: #8B8FA3; color: #fff; }
-[data-theme="light"] .health-badge[data-band="healthy"] { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
-[data-theme="light"] .health-badge[data-band="watch"] { background: #FEF3C7; color: #B45309; border-color: #FDE68A; }
-[data-theme="light"] .health-badge[data-band="critical"] { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
-[data-theme="light"] .health-badge[data-band="churned"], [data-theme="light"] .health-badge[data-band="unknown"] { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
+/* Calm health metric — a status dot plus the plain score number, no filled pill. */
+.health-metric { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink); font-family: var(--font); }
 .priority-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .client-item-sub { font-size: 10.5px; color: var(--muted-2); font-family: var(--mono); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: 14px; }
 .overdue-flag { color: var(--red); font-weight: 600; }
@@ -477,7 +470,7 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 /* Table view */
 .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .data-table th {
-  text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+  text-align: left; font-size: 12px; font-weight: 500; text-transform: none; letter-spacing: normal;
   color: var(--muted); padding: 9px 12px; border-bottom: 1px solid var(--line); cursor: pointer; white-space: nowrap;
 }
 .data-table th:hover { color: var(--ink); }
@@ -645,7 +638,7 @@ textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
 .gtd-progress-wrap { margin-bottom: 18px; }
 .gtd-progress-bar { height: 6px; background: var(--panel-3); border-radius: var(--radius-xs); overflow: hidden; }
 .gtd-progress-fill { height: 100%; background: var(--accent); transition: width 0.2s; }
-.gtd-progress-label { font-size: 11px; color: var(--muted); margin-top: 7px; font-family: var(--mono); }
+.gtd-progress-label { font-size: 11px; color: var(--muted); margin-top: 7px; }
 .gtd-step { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
 .gtd-step:last-child { border-bottom: none; }
 .gtd-checkbox {
@@ -1313,14 +1306,8 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .stage-pill[data-stage="Live Support"] { background: #38BDF8; color: #10222b; }
 .stage-pill[data-stage="Churned"] { background: #D6544A; color: #fff; }
 
-/* ---------- Stage badge colors: light theme (soft pastel, per spec) ---------- */
-[data-theme="light"] .stage-pill[data-stage="Lead"] { background: #EFF6FB; color: #0176D3; border-color: #B0D5F5; }
-[data-theme="light"] .stage-pill[data-stage="Discovery"] { background: #F3E8FF; color: #7E22CE; border-color: #D8B4FE; }
-[data-theme="light"] .stage-pill[data-stage="POC"] { background: #FEF3C7; color: #B45309; border-color: #FDE68A; }
-[data-theme="light"] .stage-pill[data-stage="Contract"] { background: #E0F2FE; color: #0369A1; border-color: #BAE6FD; }
-[data-theme="light"] .stage-pill[data-stage="Deployed"] { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
-[data-theme="light"] .stage-pill[data-stage="Live Support"] { background: #E0F7FA; color: #00796B; border-color: #B2EBF2; }
-[data-theme="light"] .stage-pill[data-stage="Churned"] { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+/* Stage pills stay flat and solid in both themes — no pastel variant, consistent
+   with the flat, no-glow language used throughout the Client Detail panel. */
 
 /* ---------- Live / Synced / Churned status badges: light theme, same pastel spec ---------- */
 [data-theme="light"] .sync-state:not(.error) { background: #DCFCE7; color: #15803D; }
@@ -1593,7 +1580,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
 }
 .dp-plain-input::placeholder { color: var(--muted-2); }
 .dp-plain-input:focus { border-color: var(--line-bright); background: var(--panel-2); }
-.dp-next-action-meta { margin-top: 8px; margin-left: 29px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.dp-next-action-due { flex-shrink: 0; margin-left: auto; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 .dp-inline-date { position: relative; background: none; border: none; padding: 0; color: inherit; font-size: inherit; font-family: var(--font); cursor: pointer; }
 .dp-inline-date:hover { color: var(--ink); }
 .dp-overdue-text { color: var(--red); }

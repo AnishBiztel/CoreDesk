@@ -30,10 +30,8 @@ export default function TopNav({
         <Logo size={24} />
         <span className="navrail-brand-name">CoreDesk</span>
       </div>
-      {syncState ? (
-        <div className={"sync-state navrail-sync" + (syncState === "error" ? " error" : "")}>
-          {syncState === "saving" ? "syncing…" : syncState === "synced" ? "synced" : syncState === "error" ? "sync failed" : ""}
-        </div>
+      {syncState === "error" ? (
+        <div className="sync-state navrail-sync error">sync failed</div>
       ) : null}
 
       <button className="btn btn-sm btn-primary navrail-new-btn" onClick={onNewClient}>

@@ -242,20 +242,20 @@ export default function ClientDetail({
                   onCommit={(v) => updateClient(c.id, { nextAction: v })}
                   onKeyDown={handleEnterSave}
                 />
-              </div>
-              <div className="dp-next-action-meta">
-                <button type="button" className="dp-inline-date" onClick={() => openPicker(nextActionDateRef)}>
-                  Due {c.nextActionDate ? fmtDate(c.nextActionDate) : "—"}
-                  <input
-                    ref={nextActionDateRef}
-                    type="date"
-                    className="dp-prop-date-input"
-                    value={c.nextActionDate || ""}
-                    onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })}
-                    tabIndex={-1}
-                  />
-                </button>
-                {overdueNextAction && <span className="dp-overdue-text">· overdue</span>}
+                <div className="dp-next-action-due">
+                  {overdueNextAction && <span className="dp-overdue-text">Overdue</span>}
+                  <button type="button" className="dp-inline-date" onClick={() => openPicker(nextActionDateRef)}>
+                    Due {c.nextActionDate ? fmtDate(c.nextActionDate) : "—"}
+                    <input
+                      ref={nextActionDateRef}
+                      type="date"
+                      className="dp-prop-date-input"
+                      value={c.nextActionDate || ""}
+                      onChange={(e) => updateClient(c.id, { nextActionDate: e.target.value })}
+                      tabIndex={-1}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
 

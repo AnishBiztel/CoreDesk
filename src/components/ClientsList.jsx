@@ -139,17 +139,21 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
                     {c.churned ? (
                       <span style={{ color: "var(--muted-2)" }}>—</span>
                     ) : (
-                      <span className="health-badge" data-band={health.band} title={health.reasons.join(", ") || "No risk signals"}>
+                      <span className="health-metric" title={health.reasons.join(", ") || "No risk signals"}>
+                        <span className="health-dot" data-band={health.band} />
                         {health.score}
                       </span>
                     )}
                   </td>
                   <td>{c.priority}</td>
-                  <td className="mono">{dur !== null ? dur + "d" : "—"}</td>
+                  <td>{dur !== null ? dur + "d" : "—"}</td>
                   <td>
                     {c.nextAction || <span style={{ color: "var(--muted-2)" }}>—</span>}
                     {c.nextActionDate && (
-                      <span className={"mono badge " + (isOverdue(c.nextActionDate) ? "badge-red" : "badge-muted")} style={{ marginLeft: 8 }}>
+                      <span
+                        className={"badge " + (isOverdue(c.nextActionDate) ? "badge-red" : "badge-muted")}
+                        style={{ marginLeft: 8, fontFamily: "var(--font)" }}
+                      >
                         {c.nextActionDate}
                       </span>
                     )}
