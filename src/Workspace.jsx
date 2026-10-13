@@ -469,6 +469,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
             toggleGtdStep={toggleGtdStep}
             onDeleteClient={(id) => { deleteClient(id); setSelectedId(null); }}
             onAddDepartment={openAddDepartment}
+            onClose={() => setSelectedId(null)}
           />
         )}
       </ClientDrawer>

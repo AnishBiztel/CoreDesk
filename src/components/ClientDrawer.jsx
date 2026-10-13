@@ -1,8 +1,10 @@
 import { useEffect } from "react";
-import { X } from "lucide-react";
 
 // Slide-over drawer (master-detail pattern): houses ClientDetail's content
 // without navigating away from whatever table/list the user clicked a row in.
+// The close affordance lives in the content's own sticky header (passed
+// onClose), not here, so it can sit next to the breadcrumb and the overflow
+// menu exactly like Linear/Attio's record panels.
 export default function ClientDrawer({ open, onClose, children }) {
   useEffect(() => {
     if (!open) return;
@@ -18,9 +20,6 @@ export default function ClientDrawer({ open, onClose, children }) {
   return (
     <div className="drawer-overlay" onClick={onClose}>
       <div className="drawer-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="drawer-close" onClick={onClose} aria-label="Close">
-          <X size={18} />
-        </button>
         {children}
       </div>
     </div>
