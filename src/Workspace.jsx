@@ -27,6 +27,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
   const [companies, setCompanies] = useState([]);
   const [addDeptFor, setAddDeptFor] = useState(null); // { companyId, companyName } | null
   const [selectedId, setSelectedId] = useState(null);
+  const [forceTabFor, setForceTabFor] = useState(null); // { clientId, tab } | null
   const [mainView, setMainView] = useState("dashboard"); // dashboard | client | trash | product
   const [topNavTab, setTopNavTab] = useState("overview");
   const [productInitialTab, setProductInitialTab] = useState("inbox");
@@ -206,6 +207,9 @@ export default function Workspace({ session, profile, onOpenSettings }) {
       c.stage = stage;
       setClients((cs) => [c, ...cs]);
       selectClient(c.id);
+      // New projects start on the Gathering (onboarding info) tab instead of
+      // Overview, so there's no extra click to get to the info that needs filling in.
+      setForceTabFor({ clientId: c.id, tab: "gathering" });
       await insertClient(c, session?.user?.id);
       setSaveState("synced");
       logActivity(c.id, userEmail, "created", `created this department under ${companyName}`);
@@ -470,6 +474,8 @@ export default function Workspace({ session, profile, onOpenSettings }) {
             onDeleteClient={(id) => { deleteClient(id); setSelectedId(null); }}
             onAddDepartment={openAddDepartment}
             onClose={() => setSelectedId(null)}
+            forceTab={forceTabFor && forceTabFor.clientId === selected.id ? forceTabFor.tab : null}
+            onForceTabApplied={() => setForceTabFor(null)}
           />
         )}
       </ClientDrawer>

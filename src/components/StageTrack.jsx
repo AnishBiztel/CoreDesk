@@ -1,25 +1,31 @@
-// Slim horizontal pipeline: filled dots for the current and completed
-// stages, hollow dots for what's ahead, one bold label for the current
-// stage and nothing else — no "Active"/"Pending" text, no "Stage x of y".
-// Entirely muted and inert once the client is churned.
+import { Check } from "lucide-react";
+
+// Salesforce-style path: solid chevron segments, one per stage. Completed
+// segments are filled green with a check, the current stage is filled
+// accent-blue and bold, upcoming stages are flat neutral chips. Entirely
+// muted and inert once the client is churned.
 export default function StageTrack({ stages, currentIndex, churned, onSelect }) {
   return (
-    <div className="dp-stage-track" aria-label="Pipeline stage">
+    <div className="sf-path" role="tablist" aria-label="Pipeline stage">
       {stages.map((stage, i) => {
         const done = !churned && i < currentIndex;
         const current = !churned && i === currentIndex;
+        const state = churned ? "muted" : done ? "done" : current ? "current" : "upcoming";
         return (
-          <div className="dp-stage-item" key={stage}>
-            <button
-              type="button"
-              className={"dp-stage-node" + (done || current ? " filled" : "") + (churned ? " muted" : "")}
-              onClick={() => !churned && onSelect(stage)}
-              disabled={churned}
-              aria-current={current ? "step" : undefined}
-            />
-            <span className={"dp-stage-label" + (current ? " current" : "") + (churned ? " muted" : "")}>{stage}</span>
-            {i < stages.length - 1 && <span className={"dp-stage-connector" + (churned ? " muted" : "")} />}
-          </div>
+          <button
+            type="button"
+            key={stage}
+            className={"sf-path-item " + state}
+            style={{ zIndex: stages.length - i }}
+            onClick={() => !churned && onSelect(stage)}
+            disabled={churned}
+            aria-current={current ? "step" : undefined}
+            aria-selected={current}
+            role="tab"
+          >
+            {done && <Check size={12} className="sf-path-check" />}
+            <span>{stage}</span>
+          </button>
         );
       })}
     </div>

@@ -4,7 +4,6 @@ import {
 } from "lucide-react";
 import { STAGES, SPEC_STATUSES, PRIORITIES, SPEC_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { handleEnterSave, isOverdue, daysSince, timeAgo } from "../lib/helpers";
-import { fetchActivity } from "../lib/api";
 import IssueAdder from "./IssueAdder";
 import CommentThread from "./CommentThread";
 import ActivityFeed from "./ActivityFeed";
@@ -111,12 +110,25 @@ export default function ClientDetail({
   onDeleteClient,
   onAddDepartment,
   onClose,
+  forceTab,
+  onForceTabApplied,
 }) {
   const [tab, setTab] = useState("overview");
+
+  // When a caller wants this panel to open straight on a specific tab (e.g. a
+  // freshly-created project should land on Gathering, not Overview), it passes
+  // forceTab for that one client. Apply it once, then tell the caller to clear it
+  // so a later re-selection of the same client doesn't keep forcing the tab.
+  useEffect(() => {
+    if (forceTab) {
+      setTab(forceTab);
+      onForceTabApplied && onForceTabApplied();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceTab, client.id]);
   const [expandedSpec, setExpandedSpec] = useState(null);
   const [expandedGathering, setExpandedGathering] = useState(null);
   const [showResolved, setShowResolved] = useState(false);
-  const [recentActivity, setRecentActivity] = useState(null);
   const nextActionDateRef = useRef(null);
   const confirmDialog = useConfirm();
 
@@ -128,17 +140,6 @@ export default function ClientDetail({
   const resolvedIssues = c.issues.filter((i) => i.resolved);
   const overdueNextAction = isOverdue(c.nextActionDate) && !c.churned;
   const hasNextAction = !!(c.nextAction || c.nextActionDate);
-
-  useEffect(() => {
-    let cancelled = false;
-    setRecentActivity(null);
-    fetchActivity(c.id)
-      .then((rows) => !cancelled && setRecentActivity((rows || []).slice(0, 5)))
-      .catch(() => !cancelled && setRecentActivity([]));
-    return () => {
-      cancelled = true;
-    };
-  }, [c.id]);
 
   function markNextActionComplete() {
     updateClient(
@@ -349,20 +350,6 @@ export default function ClientDetail({
                   )}
 
                   <IssueAdder onAdd={(text) => addIssue(c.id, text)} />
-                </div>
-
-                <div className="dp-divider" />
-
-                <div className="dp-section">
-                  <div className="dp-section-label">Recent activity</div>
-                  {recentActivity === null && <div className="dp-muted-line">Loading…</div>}
-                  {recentActivity && recentActivity.length === 0 && <div className="dp-muted-line">No activity recorded yet.</div>}
-                  {recentActivity && recentActivity.map((a) => (
-                    <div className="dp-activity-row" key={a.id}>
-                      <span className="dp-activity-text">{a.user_email} {a.detail}</span>
-                      <span className="dp-activity-time">{timeAgo(a.created_at)}</span>
-                    </div>
-                  ))}
                 </div>
 
                 <div className="dp-divider" />
