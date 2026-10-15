@@ -45,7 +45,6 @@ export default function ProjectStatusChart({ clients = [] }) {
           <h2>Project Status</h2>
         </div>
         <div className="project-status-head-meta">
-          <div className="project-status-live"><span /> Live</div>
           {statusData.churned > 0 && (
             <div className="project-status-churned-badge">
               <span className="project-status-dot" style={{ background: STAGE_COLORS.Churned }} /> {statusData.churned} churned
