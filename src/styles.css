@@ -1061,8 +1061,8 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .project-status-churned-badge {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 9px; border-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
-  background: color-mix(in srgb, var(--red) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 45%, var(--line));
+  background: var(--panel-2);
   color: var(--red); font: 600 10px var(--mono);
 }
 .project-status-footer > span:first-child { display:flex; align-items:center; gap:6px; color:var(--muted); }
@@ -1252,14 +1252,14 @@ button, input, textarea, select { transition: border-color .18s ease, background
   .right-rail { display: none; }
 }
 
-/* ---------- SLDS-style colored KPI tiles (light theme only) ---------- */
+/* ---------- Flat pitch-black KPI tiles — color via border/number only, never a tinted fill ---------- */
 .kpi-card, .rail-kpi { box-shadow: none; }
 .kpi-card-neutral, .rail-kpi-neutral { background: var(--panel-2); border-color: var(--line); }
-.kpi-card-accent, .rail-kpi-accent { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
-.kpi-card-accent .kpi-num, .rail-kpi-accent .rail-kpi-num { color: var(--accent-ink); }
-.kpi-card-red, .rail-kpi-red { background: var(--red-soft); border-color: color-mix(in srgb, var(--red) 35%, transparent); }
+.kpi-card-accent, .rail-kpi-accent { background: var(--panel-2); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.kpi-card-accent .kpi-num, .rail-kpi-accent .rail-kpi-num { color: var(--ink); }
+.kpi-card-red, .rail-kpi-red { background: var(--panel-2); border-color: color-mix(in srgb, var(--red) 45%, var(--line)); }
 .kpi-card-red .kpi-num { color: var(--red); }
-.kpi-card-amber, .rail-kpi-amber { background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
+.kpi-card-amber, .rail-kpi-amber { background: var(--panel-2); border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); }
 .kpi-card-amber .kpi-num { color: var(--amber); }
 .kpi-bar { display: none; }
 
@@ -1317,7 +1317,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
 [data-theme="light"] .sync-state.error { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
 [data-theme="light"] .project-status-live { background: #DCFCE7; color: #15803D; border-color: #BBF7D0; }
 [data-theme="light"] .project-status-live span { background: #16A34A; }
-[data-theme="light"] .project-status-churned-badge { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
+[data-theme="light"] .project-status-churned-badge { background: var(--panel-2); color: #B91C1C; border-color: #F3B4B4; }
 
 /* ---------- Selected client card in light theme, per spec ---------- */
 [data-theme="light"] .client-item.active {
