@@ -3,13 +3,13 @@ export const SPEC_STATUSES = ["Draft", "Reviewed with Eng", "Approved", "In Prog
 export const PRIORITIES = ["Low", "Medium", "High"];
 
 export const STAGE_COLORS = {
-  Lead: "#8B8FA3",
-  Discovery: "#7C6FE0",
-  POC: "#D69E2E",
-  Contract: "#3E7C8C",
-  Deployed: "#2F9E6E",
-  "Live Support": "#38BDF8",
-  Churned: "#D6544A",
+  Lead: "#6366F1",
+  Discovery: "#06B6D4",
+  POC: "#0284C7",
+  Contract: "#2563EB",
+  Deployed: "#0D9488",
+  "Live Support": "#059669",
+  Churned: "#DC2626",
 };
 export const SPEC_COLORS = {
   Draft: "#8B8FA3",
