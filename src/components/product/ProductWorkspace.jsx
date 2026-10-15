@@ -164,9 +164,6 @@ export default function ProductWorkspace({ session, initialTab }) {
           <button className={"tab-btn" + (tab === "changelog" ? " active" : "")} onClick={() => setTab("changelog")}>
             <History size={14} /> Changelog
           </button>
-          <button className={"tab-btn" + (tab === "hardware" ? " active" : "")} onClick={() => setTab("hardware")}>
-            <Cpu size={14} /> Hardware / BOM
-          </button>
         </div>
       </div>
 
