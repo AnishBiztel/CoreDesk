@@ -156,18 +156,12 @@ select.input option, select option { background: var(--panel-2); color: var(--in
 }
 
 /* ---------- Pills / badges (soft-glow style) ---------- */
+/* Flat, solid spec-status pill — same no-pastel language as the stage pills. */
 .pill {
-  font-size: 10.5px; font-weight: 600; padding: 3px 9px 3px 7px; border-radius: var(--radius-pill);
-  font-family: var(--mono); letter-spacing: 0.02em; white-space: nowrap;
-  display: inline-flex; align-items: center; gap: 5px;
-  background: color-mix(in srgb, var(--pill-color, var(--muted)) 16%, transparent);
-  color: color-mix(in srgb, var(--pill-color, var(--muted)) 70%, white 30%);
-  border: 1px solid color-mix(in srgb, var(--pill-color, var(--muted)) 32%, transparent);
-}
-.pill::before {
-  content: ""; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--pill-color, var(--muted));
-  flex-shrink: 0;
+  font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: var(--radius-sm);
+  font-family: var(--font); letter-spacing: normal; white-space: nowrap;
+  display: inline-flex; align-items: center;
+  background: var(--pill-color, var(--muted)); color: #fff; border: none;
 }
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
@@ -943,7 +937,7 @@ button, input, textarea, select { transition: border-color .18s ease, background
 }
 
 /* Status badges */
-.pill { padding: 4px 9px 4px 7px; }
+.pill { padding: 4px 9px; }
 
 /* Tabs */
 .tabs { border-color: var(--line); gap: 4px; }
@@ -1166,13 +1160,6 @@ button, input, textarea, select { transition: border-color .18s ease, background
   background: var(--bg);
 }
 
-/* Badges: on dark backgrounds text is mixed toward white for brightness;
-   on light backgrounds that would be illegible, so mix toward black instead. */
-[data-theme="light"] .pill {
-  background: color-mix(in srgb, var(--pill-color, var(--muted)) 13%, white 87%);
-  color: color-mix(in srgb, var(--pill-color, var(--muted)) 78%, black 20%);
-  border-color: color-mix(in srgb, var(--pill-color, var(--muted)) 38%, white 62%);
-}
 [data-theme="light"] .badge-muted { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
 [data-theme="light"] .badge-red { background: #FEE2E2; color: #B91C1C; border-color: #FECACA; }
 [data-theme="light"] .badge-amber { background: #FEF3C7; color: #B45309; border-color: #FDE68A; }

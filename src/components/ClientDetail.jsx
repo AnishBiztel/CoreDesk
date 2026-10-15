@@ -531,8 +531,9 @@ export default function ClientDetail({
           <div className="dp-col-side">
             <PropertyRow
               label="Department"
-              type="readonly"
               value={c.departmentName}
+              placeholder="Add department"
+              onCommit={(v) => updateClient(c.id, { departmentName: v })}
             />
             <PropertyRow
               label="Account ID"
