@@ -144,6 +144,9 @@ input, textarea, select {
 .input::placeholder { color: var(--muted-2); }
 .input:focus { border-color: var(--accent); }
 textarea.input { resize: vertical; min-height: 60px; line-height: 1.5; }
+/* Native popup list — without this, every select's dropdown falls back to a
+   plain white/light list even while the field itself is themed dark. */
+select.input option, select option { background: var(--panel-2); color: var(--ink); }
 
 /* ---------- Cards ---------- */
 .card {

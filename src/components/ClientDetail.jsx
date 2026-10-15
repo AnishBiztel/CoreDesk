@@ -530,6 +530,18 @@ export default function ClientDetail({
 
           <div className="dp-col-side">
             <PropertyRow
+              label="Department"
+              type="readonly"
+              value={c.departmentName}
+            />
+            <PropertyRow
+              label="Account ID"
+              value={c.accountCode}
+              placeholder="Add account ID"
+              mono
+              onCommit={(v) => updateClient(c.id, { accountCode: v })}
+            />
+            <PropertyRow
               label="Stage"
               type="select"
               value={c.churned ? "Churned" : c.stage}
@@ -562,18 +574,6 @@ export default function ClientDetail({
               value={c.lastContact}
               formatted={c.lastContact ? fmtDate(c.lastContact) + (sinceContact !== null ? ` (${sinceContact === 0 ? "today" : sinceContact + "d ago"})` : "") : ""}
               onCommit={(v) => updateClient(c.id, { lastContact: v })}
-            />
-            <PropertyRow
-              label="Account ID"
-              value={c.accountCode}
-              placeholder="Add account ID"
-              mono
-              onCommit={(v) => updateClient(c.id, { accountCode: v })}
-            />
-            <PropertyRow
-              label="Department"
-              type="readonly"
-              value={c.departmentName}
             />
             <PropertyRow
               label="Created"
