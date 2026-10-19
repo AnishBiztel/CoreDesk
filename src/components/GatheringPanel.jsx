@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Download, Plus, Pencil, Trash2, Check, CircleCheck } from "lucide-react";
+import { Download, Plus, Pencil, Trash2, Check, CircleCheck, User } from "lucide-react";
 import { handleEnterSave } from "../lib/helpers";
 import { exportToExcel } from "../lib/excel";
+import { PRIORITIES, PRIORITY_COLORS } from "../lib/constants";
 import DebouncedField from "./DebouncedField";
 import { useConfirm } from "./ConfirmDialog";
 
@@ -57,6 +58,29 @@ function GatheringRow({ index, item, onUpdate, onDelete }) {
             <Trash2 size={14} />
           </button>
         </div>
+      </div>
+
+      <div className="gq-row-meta">
+        <span className="gq-meta-field">
+          <span className="priority-dot" style={{ background: PRIORITY_COLORS[item.priority || "Medium"] }} />
+          <select
+            className="input gq-priority-select"
+            value={item.priority || "Medium"}
+            onChange={(e) => onUpdate({ priority: e.target.value })}
+          >
+            {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </span>
+        <span className="gq-meta-field">
+          <User size={12} className="gq-meta-icon" />
+          <DebouncedField
+            className="input gq-assignee-input"
+            placeholder="Unassigned"
+            value={item.assignee || ""}
+            onCommit={(v) => onUpdate({ assignee: v })}
+            onKeyDown={handleEnterSave}
+          />
+        </span>
       </div>
 
       {answered && !editingAnswer ? (
