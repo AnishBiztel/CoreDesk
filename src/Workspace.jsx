@@ -269,7 +269,7 @@ export default function Workspace({ session, profile, onOpenSettings }) {
 
   function addGatheringQuestion(clientId, question = "") {
     const client = clients.find((c) => c.id === clientId);
-    const q = { id: uid(), question, answer: "", priority: "Medium", assignee: "", updatedAt: "" };
+    const q = { id: uid(), question, answer: "", updatedAt: "" };
     updateClient(clientId, { gathering: [...(client.gathering || []), q] });
   }
 
