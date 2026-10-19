@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  ChevronRight, ChevronDown, Trash2, Check, Download, X, Calendar,
+  ChevronRight, ChevronDown, Trash2, Check, X, Calendar,
 } from "lucide-react";
 import { STAGES, SPEC_STATUSES, PRIORITIES, SPEC_COLORS, STUCK_STAGE_DAYS } from "../lib/constants";
 import { handleEnterSave, isOverdue, daysSince, timeAgo } from "../lib/helpers";
@@ -9,12 +9,12 @@ import CommentThread from "./CommentThread";
 import ActivityFeed from "./ActivityFeed";
 import FilesPanel from "./FilesPanel";
 import DebouncedField from "./DebouncedField";
-import { exportToExcel } from "../lib/excel";
 import { useConfirm } from "./ConfirmDialog";
 import Pill from "./Pill";
 import PropertyRow from "./PropertyRow";
 import StageTrack from "./StageTrack";
 import OverflowMenu from "./OverflowMenu";
+import GatheringPanel from "./GatheringPanel";
 
 function openPicker(ref) {
   const el = ref.current;
@@ -127,7 +127,6 @@ export default function ClientDetail({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forceTab, client.id]);
   const [expandedSpec, setExpandedSpec] = useState(null);
-  const [expandedGathering, setExpandedGathering] = useState(null);
   const [showResolved, setShowResolved] = useState(false);
   const nextActionDateRef = useRef(null);
   const confirmDialog = useConfirm();
@@ -359,75 +358,13 @@ export default function ClientDetail({
 
             {tab === "gathering" && (
               <div className="section">
-                {(() => {
-                  const items = gatheringItems;
-                  const pct = items.length ? Math.round((gatheringAnswered / items.length) * 100) : 0;
-                  return (
-                    <>
-                      <div className="page-header" style={{ marginBottom: 12 }}>
-                        <div className="section-title" style={{ marginBottom: 0 }}>Requirement gathering — discovery call questions</div>
-                        <button
-                          className="btn btn-sm"
-                          onClick={() =>
-                            exportToExcel(
-                              `${c.name || "client"}-requirement-gathering`,
-                              "Requirement Gathering",
-                              items.map((q) => ({ Question: q.question, Answer: q.answer, Status: q.answer.trim() ? "Answered" : "Pending" }))
-                            )
-                          }
-                        >
-                          <Download size={13} /> Export to Excel
-                        </button>
-                      </div>
-                      <div className="gtd-progress-wrap">
-                        <div className="gtd-progress-bar"><div className="gtd-progress-fill" style={{ width: pct + "%" }} /></div>
-                        <div className="gtd-progress-label">{gatheringAnswered} of {items.length} answered ({pct}%)</div>
-                      </div>
-                      <button className="btn btn-ghost btn-dashed" style={{ width: "100%", justifyContent: "center" }} onClick={() => addGatheringQuestion(c.id)}>+ Add question</button>
-                      <div style={{ marginTop: 12 }}>
-                        {items.length === 0 && <div className="no-items">No questions yet.</div>}
-                        {items.map((item) => {
-                          const open = expandedGathering === item.id;
-                          const status = item.answer.trim() ? "Answered" : "Pending";
-                          return (
-                            <div className="spec-card" key={item.id}>
-                              <div className="spec-card-head" onClick={() => setExpandedGathering(open ? null : item.id)}>
-                                <div className="spec-card-title">
-                                  {open ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
-                                  <span>{item.question || "Untitled question"}</span>
-                                </div>
-                                <div className="spec-card-head-right">
-                                  <span className="status-pill" data-status={status}>{status}</span>
-                                  <button
-                                    className="icon-btn danger"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      confirmDialog("Delete this question? This can't be undone.").then((ok) => ok && deleteGatheringItem(c.id, item.id));
-                                    }}
-                                  >
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </div>
-                              {open && (
-                                <div className="spec-body">
-                                  <div>
-                                    <div className="field-label">Question</div>
-                                    <DebouncedField as="textarea" placeholder="What do you need to find out from the client?" value={item.question} onCommit={(v) => updateGatheringItem(c.id, item.id, { question: v })} onKeyDown={handleEnterSave} />
-                                  </div>
-                                  <div>
-                                    <div className="field-label">Answer</div>
-                                    <DebouncedField as="textarea" placeholder="What the client told you" value={item.answer} onCommit={(v) => updateGatheringItem(c.id, item.id, { answer: v })} onKeyDown={handleEnterSave} />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  );
-                })()}
+                <GatheringPanel
+                  clientName={c.name}
+                  items={gatheringItems}
+                  onAdd={(question) => addGatheringQuestion(c.id, question)}
+                  onUpdate={(itemId, patch) => updateGatheringItem(c.id, itemId, patch)}
+                  onDelete={(itemId) => deleteGatheringItem(c.id, itemId)}
+                />
               </div>
             )}
 

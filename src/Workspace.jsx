@@ -267,9 +267,9 @@ export default function Workspace({ session, profile, onOpenSettings }) {
     updateClient(clientId, { specs: client.specs.filter((s) => s.id !== specId) }, { action: "spec_deleted", detail: "deleted a spec" });
   }
 
-  function addGatheringQuestion(clientId) {
+  function addGatheringQuestion(clientId, question = "") {
     const client = clients.find((c) => c.id === clientId);
-    const q = { id: uid(), question: "", answer: "", updatedAt: "" };
+    const q = { id: uid(), question, answer: "", updatedAt: "" };
     updateClient(clientId, { gathering: [...(client.gathering || []), q] });
   }
 
