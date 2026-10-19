@@ -257,6 +257,93 @@ select.input option, select option { background: var(--panel-2); color: var(--in
 }
 .navrail-utility .icon-btn.active { background: var(--accent-soft); color: var(--accent-ink); }
 
+/* =========================================================
+   MOBILE APP SHELL — bottom tab bar + "More" sheet.
+   Hidden by default (desktop); shown only under the phone
+   breakpoint, where the side rail (.navrail-wide) is hidden
+   instead. Same CSS tokens throughout, so look & theme match
+   the desktop app exactly.
+   ========================================================= */
+.mobile-tabbar { display: none; }
+.mobile-sheet-overlay { display: none; }
+.mobile-only { display: none; }
+
+@media (max-width: 640px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: block; }
+
+  .client-card-list { display: flex; flex-direction: column; gap: 8px; }
+  .client-row-card {
+    display: block; width: 100%; text-align: left; font-family: var(--font);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 13px; cursor: pointer;
+  }
+  .client-row-card:active { background: var(--panel-3); }
+  .client-row-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .client-row-card-name { font-size: 14px; font-weight: 600; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .client-row-card-dept { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .client-row-card-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted); align-items: center; }
+  .client-row-card-next {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line-soft);
+    font-size: 12.5px; color: var(--ink);
+  }
+  .client-row-card-next span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Client detail panel already goes full-width under 860px (see .drawer-panel);
+     just tighten its header padding and grow tap targets for a phone. */
+  .dp-sticky-header { padding: 0 14px; padding-top: env(safe-area-inset-top); height: auto; min-height: 56px; }
+  .icon-btn { padding: 9px; }
+
+  /* "Needs attention" rows pack a health badge, name/chips, two action
+     buttons and an overdue flag into one line — stack them on a phone
+     instead of letting the actions overlap the (possibly 2-line) name. */
+  .attention-row { flex-wrap: wrap; align-items: flex-start; gap: 8px 10px; padding: 12px 14px; }
+  .attention-row-main { order: 2; flex: 1 1 100%; }
+  .attention-row-actions { order: 3; flex-wrap: wrap; flex: 1 1 100%; padding-left: 0; }
+  .attention-row-arrow { display: none; }
+
+  .navrail.navrail-wide { display: none; }
+
+  .app-root { height: auto; min-height: 100dvh; overflow: visible; }
+  .app-shell { flex-direction: column; height: auto; overflow: visible; }
+  .main { overflow-y: visible; padding-bottom: calc(66px + env(safe-area-inset-bottom)); }
+
+  .mobile-tabbar {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 80;
+    background: var(--panel); border-top: 1px solid var(--line);
+    padding: 6px 2px calc(6px + env(safe-area-inset-bottom));
+    justify-content: space-around; align-items: stretch;
+  }
+  .mobile-tab {
+    flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none; color: var(--muted); font-family: var(--font);
+    font-size: 10px; font-weight: 500; padding: 6px 2px; border-radius: var(--radius-sm);
+    cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mobile-tab span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .mobile-tab.active { color: var(--accent); }
+
+  .mobile-sheet-overlay {
+    display: block; position: fixed; inset: 0; z-index: 90;
+    background: rgba(0, 0, 0, 0.55);
+  }
+  .mobile-sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; max-height: 82vh; overflow-y: auto;
+    background: var(--panel); border-top: 1px solid var(--line-bright);
+    border-radius: 14px 14px 0 0; padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+  }
+  .mobile-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .mobile-sheet-head .navrail-brand { padding: 0; }
+  .mobile-sheet-row {
+    display: flex; align-items: center; gap: 10px; padding: 12px 8px;
+    color: var(--ink); font-size: 14px; font-weight: 500; cursor: pointer;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .mobile-sheet-row:last-child { border-bottom: none; }
+  .mobile-sheet-row svg { color: var(--muted); flex-shrink: 0; }
+}
+
 /* ---------- Unified filter toolbar (Clients table) ---------- */
 .list-toolbar {
   display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px;
@@ -1251,6 +1338,15 @@ button, input, textarea, select { transition: border-color .18s ease, background
 @media (max-width: 1300px) {
   .right-rail { display: none; }
 }
+/* On a phone there's no 3rd column being squeezed, so bring the insights
+   rail back, stacked below the main content, instead of losing it entirely. */
+@media (max-width: 640px) {
+  .right-rail {
+    display: block; width: auto; flex-shrink: 1;
+    border-left: none; border-top: 1px solid var(--line-bright);
+    padding: 16px 14px 20px;
+  }
+}
 
 /* ---------- Flat pitch-black KPI tiles — color via border/number only, never a tinted fill ---------- */
 .kpi-card, .rail-kpi { box-shadow: none; }
@@ -1587,6 +1683,12 @@ button, input, textarea, select { transition: border-color .18s ease, background
 .dp-inline-date:hover { color: var(--ink); }
 .dp-overdue-text { color: var(--red); }
 
+@media (max-width: 640px) {
+  /* Next action row's inline due-date button was getting clipped on the right. */
+  .dp-next-action-row { flex-wrap: wrap; row-gap: 6px; }
+  .dp-next-action-due { margin-left: 0; flex: 1 1 100%; justify-content: flex-end; }
+}
+
 .dp-plain-textarea {
   width: 100%; min-height: 52px; border: 1px solid transparent; background: none; outline: none; resize: vertical;
   font-size: 14px; color: var(--ink); font-family: var(--font); padding: 4px 6px; border-radius: var(--radius-xs);
@@ -1650,9 +1752,21 @@ button, input, textarea, select { transition: border-color .18s ease, background
 @media (max-width: 700px) {
   .sf-path { flex-direction: column; height: auto; gap: 2px; }
   .sf-path-item { clip-path: none !important; margin-right: 0 !important; padding: 10px 14px; justify-content: flex-start; border-radius: var(--radius-xs); }
-  .dp-columns { flex-direction: column; }
+  /* align-items: flex-start (set for the desktop side-by-side layout) makes
+     flex items shrink-to-fit their content on the CROSS axis — once the
+     direction flips to column that cross axis is width, so without this
+     override each column sizes to its widest child instead of the screen,
+     and the whole panel scrolls horizontally. Stretch keeps both columns
+     pinned to the full available width instead. */
+  .dp-columns { flex-direction: column; align-items: stretch; }
   .dp-col-side { width: 100%; border-left: none; border-top: 1px solid var(--line); padding-left: 0; padding-top: 20px; margin-top: 20px; }
-  .dp-col-main { padding-right: 0; }
+  .dp-col-main { padding-right: 0; min-width: 0; }
+
+  /* The tab strip (Overview/Gathering/Specs/GTD/Files/Activity) doesn't fit
+     six tabs at phone width — scroll it horizontally like the kanban board
+     rather than letting it silently stretch the whole panel sideways. */
+  .dp-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+  .dp-tab { white-space: nowrap; flex-shrink: 0; }
 }
 
 /* =========================================================

@@ -107,7 +107,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
         </div>
       </div>
 
-      <div className="card" style={{ overflowX: "auto" }}>
+      <div className="card desktop-only" style={{ overflowX: "auto" }}>
         <table className="data-table">
           <thead>
             <tr>
@@ -168,6 +168,47 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* ---------- Mobile: card list, same fields as the table above ---------- */}
+      <div className="mobile-only client-card-list">
+        {sortedRows().map((c) => {
+          const dur = stageDuration(c);
+          const health = computeHealthScore(c);
+          const openIssues = c.issues.filter((i) => !i.resolved).length;
+          return (
+            <button key={c.id} type="button" className="client-row-card" onClick={() => onSelect(c.id)}>
+              <div className="client-row-card-top">
+                <div className="client-row-card-name">{c.name || "Untitled client"}</div>
+                <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
+                  {c.churned ? "Churned" : c.stage}
+                </span>
+              </div>
+              {c.departmentName && <div className="client-row-card-dept">{c.departmentName}</div>}
+              <div className="client-row-card-meta">
+                {!c.churned && (
+                  <span className="health-metric" title={health.reasons.join(", ") || "No risk signals"}>
+                    <span className="health-dot" data-band={health.band} /> {health.score}
+                  </span>
+                )}
+                <span>{c.priority} priority</span>
+                {dur !== null && <span>{dur}d in stage</span>}
+                {openIssues > 0 && <span>{openIssues} open issue{openIssues === 1 ? "" : "s"}</span>}
+              </div>
+              {c.nextAction && (
+                <div className="client-row-card-next">
+                  <span>{c.nextAction}</span>
+                  {c.nextActionDate && (
+                    <span className={"badge " + (isOverdue(c.nextActionDate) ? "badge-red" : "badge-muted")} style={{ fontFamily: "var(--font)" }}>
+                      {c.nextActionDate}
+                    </span>
+                  )}
+                </div>
+              )}
+            </button>
+          );
+        })}
+        {sortedRows().length === 0 && <div className="no-items">No clients match.</div>}
       </div>
     </div>
   );
