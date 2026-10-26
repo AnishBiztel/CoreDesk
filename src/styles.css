@@ -1055,16 +1055,70 @@ button, input, textarea, select { transition: border-color .18s ease, background
   display: grid;
   place-items: center;
   padding: 24px;
+  position: relative;
+  overflow: hidden;
   background:
     radial-gradient(650px 420px at 50% 10%, rgba(210, 118, 46,.14), transparent 68%),
     radial-gradient(500px 350px at 20% 90%, rgba(53,212,154,.04), transparent 70%),
     #07090d;
 }
 .auth-card {
+  position: relative;
+  z-index: 1;
   width: 410px; max-width: 100%; padding: 34px;
   background: var(--panel);
   border: 1px solid var(--line-bright); border-radius: var(--radius-lg);
   box-shadow: var(--shadow-2);
+}
+
+/* Motion background: a one-shot stage-track sweep near the top, and a
+   blurred, continuously-pulsing glimpse of the dashboard underneath. Sits
+   behind .auth-card (z-index above it) and never captures clicks. */
+.auth-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+.auth-bg-dashboard { position: absolute; inset: 0; filter: blur(3px); opacity: 0.4; }
+.auth-bg-tiles {
+  position: absolute; top: 14%; left: 8%; right: 8%;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.auth-bg-tile {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 12px; height: 54px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.auth-bg-tile-label { font-size: 10px; color: var(--muted-2); }
+.auth-bg-tile-bar { display: block; height: 4px; width: 60%; border-radius: 2px; opacity: 0.85; }
+.auth-bg-chart {
+  position: absolute; top: 38%; left: 8%; right: 8%; height: 90px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  display: flex; align-items: flex-end; gap: 7px; padding: 12px;
+}
+.auth-bg-bar {
+  flex: 1; background: linear-gradient(180deg, var(--accent), var(--accent-bright));
+  border-radius: 2px 2px 0 0; animation: auth-bg-bob 3.6s ease-in-out infinite;
+}
+@keyframes auth-bg-bob { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.72); } }
+
+.auth-bg-track { position: absolute; top: 5%; left: 10%; right: 10%; display: flex; height: 24px; }
+.auth-bg-seg {
+  flex: 1; position: relative; margin-right: -10px;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 10px 50%);
+  transform: scaleX(0); transform-origin: left center;
+  animation: auth-bg-fill 0.5s ease forwards;
+}
+.auth-bg-seg:first-child { clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%); }
+@keyframes auth-bg-fill { to { transform: scaleX(1); } }
+.auth-bg-dot {
+  position: absolute; top: 50%; left: 0; width: 8px; height: 8px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 10px 3px var(--accent); transform: translate(-50%, -50%);
+  opacity: 0; animation: auth-bg-dot-travel 1.9s cubic-bezier(.4,0,.2,1) forwards; animation-delay: 1s;
+}
+@keyframes auth-bg-dot-travel {
+  0% { left: 0%; opacity: 0; } 6% { opacity: 1; } 94% { opacity: 1; } 100% { left: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-bg-seg, .auth-bg-dot, .auth-bg-bar { animation: none !important; transform: none !important; opacity: 1 !important; }
+  .auth-bg-seg { transform: scaleX(1) !important; }
 }
 .auth-brand { font-size: 22px; font-weight: 750; letter-spacing: -.035em; }
 .auth-logo { background: linear-gradient(135deg,#4fabff,#1b96ff); box-shadow: 0 8px 22px rgba(27, 150, 255,.25); border-radius: var(--radius-sm); }

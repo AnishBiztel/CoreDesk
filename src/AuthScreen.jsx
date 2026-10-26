@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Logo from "./components/Logo";
+import AuthMotionBackground from "./components/AuthMotionBackground";
 import { supabase } from "./supabaseClient";
 import { WORK_DOMAIN } from "./lib/constants";
 
@@ -31,6 +32,7 @@ export default function AuthScreen() {
 
   return (
     <div className="auth-screen">
+      <AuthMotionBackground />
       <div className="auth-card">
         <div className="auth-brand">
           <Logo size={36} />
