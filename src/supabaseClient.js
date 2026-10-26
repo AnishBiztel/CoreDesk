@@ -9,4 +9,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// sessionStorage (not the default localStorage) so the session is cleared
+// the moment the tab/app window is closed — reopening it always requires
+// signing in again, rather than staying signed in indefinitely. Within a
+// single open session, reloads and background token refreshes still work
+// normally; a 2-hour inactivity sign-out is handled separately in App.jsx.
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: window.sessionStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "./supabaseClient";
 import { fetchProfile } from "./lib/api";
+import { useIdleLogout } from "./lib/useIdleLogout";
 import AuthScreen from "./AuthScreen";
 import Settings from "./Settings";
 import Workspace from "./Workspace";
@@ -33,6 +34,13 @@ function AppInner() {
       setProfile(null);
     }
   }, [session?.user?.id]);
+
+  // Signed out automatically after 2 hours with no mouse/keyboard/touch
+  // activity, so a session left open and untouched doesn't stay live forever.
+  const handleIdle = useCallback(() => {
+    supabase.auth.signOut();
+  }, []);
+  useIdleLogout(!!session, handleIdle);
 
   if (session === undefined) {
     return (
