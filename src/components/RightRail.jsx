@@ -16,10 +16,13 @@ export default function RightRail({ allClients }) {
 
   const distribution = useMemo(() => {
     const active = allClients.filter((c) => !c.churned);
-    return STAGES.map((stage) => ({
+    const byStage = STAGES.map((stage) => ({
       stage,
       count: active.filter((c) => c.stage === stage).length,
     })).filter((d) => d.count > 0);
+    const churnedCount = allClients.filter((c) => c.churned).length;
+    if (churnedCount > 0) byStage.push({ stage: "Churned", count: churnedCount });
+    return byStage;
   }, [allClients]);
 
   const maxCount = Math.max(1, ...distribution.map((d) => d.count));
