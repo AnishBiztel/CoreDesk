@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Download, Search } from "lucide-react";
 import { daysSince, isOverdue, toCSV, downloadBlob } from "../lib/helpers";
-import { computeHealthScore } from "../lib/health";
 import { STAGES } from "../lib/constants";
 
 function stageDuration(c) {
@@ -32,10 +31,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
         case "daysInStage":
           av = stageDuration(a) ?? -1;
           bv = stageDuration(b) ?? -1;
-          break;
-        case "health":
-          av = computeHealthScore(a).score ?? 999;
-          bv = computeHealthScore(b).score ?? 999;
           break;
         case "nextActionDate":
           av = a.nextActionDate || "9999";
@@ -71,7 +66,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
       { label: "Due", value: (c) => c.nextActionDate },
       { label: "Last contact", value: (c) => c.lastContact },
       { label: "Days in stage", value: (c) => stageDuration(c) ?? "" },
-      { label: "Health score", value: (c) => computeHealthScore(c).score ?? "" },
       { label: "Open issues", value: (c) => c.issues.filter((i) => !i.resolved).length },
       { label: "Specs", value: (c) => c.specs.length },
     ]);
@@ -114,7 +108,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
               <th onClick={() => toggleSort("name")}>Client</th>
               <th>Department</th>
               <th onClick={() => toggleSort("stage")}>Stage</th>
-              <th onClick={() => toggleSort("health")}>Health</th>
               <th onClick={() => toggleSort("priority")}>Priority</th>
               <th onClick={() => toggleSort("daysInStage")}>Days in stage</th>
               <th onClick={() => toggleSort("nextActionDate")}>Next action / due</th>
@@ -124,7 +117,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
           <tbody>
             {sortedRows().map((c) => {
               const dur = stageDuration(c);
-              const health = computeHealthScore(c);
               return (
                 <tr key={c.id} onClick={() => onSelect(c.id)}>
                   <td style={{ fontWeight: 600 }}>{c.name || "Untitled client"}</td>
@@ -133,16 +125,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
                     <span className="stage-pill" data-stage={c.churned ? "Churned" : c.stage}>
                       {c.churned ? "Churned" : c.stage}
                     </span>
-                  </td>
-                  <td>
-                    {c.churned ? (
-                      <span style={{ color: "var(--muted-2)" }}>—</span>
-                    ) : (
-                      <span className="health-metric" title={health.reasons.join(", ") || "No risk signals"}>
-                        <span className="health-dot" data-band={health.band} />
-                        {health.score}
-                      </span>
-                    )}
                   </td>
                   <td>{c.priority}</td>
                   <td>{dur !== null ? dur + "d" : "—"}</td>
@@ -163,7 +145,7 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
             })}
             {sortedRows().length === 0 && (
               <tr>
-                <td colSpan={8} className="no-items">No clients match.</td>
+                <td colSpan={7} className="no-items">No clients match.</td>
               </tr>
             )}
           </tbody>
@@ -174,7 +156,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
       <div className="mobile-only client-card-list">
         {sortedRows().map((c) => {
           const dur = stageDuration(c);
-          const health = computeHealthScore(c);
           const openIssues = c.issues.filter((i) => !i.resolved).length;
           return (
             <button key={c.id} type="button" className="client-row-card" onClick={() => onSelect(c.id)}>
@@ -186,11 +167,6 @@ export default function ClientsList({ filtered, onSelect, onAddClient, query, se
               </div>
               {c.departmentName && <div className="client-row-card-dept">{c.departmentName}</div>}
               <div className="client-row-card-meta">
-                {!c.churned && (
-                  <span className="health-metric" title={health.reasons.join(", ") || "No risk signals"}>
-                    <span className="health-dot" data-band={health.band} /> {health.score}
-                  </span>
-                )}
                 <span>{c.priority} priority</span>
                 {dur !== null && <span>{dur}d in stage</span>}
                 {openIssues > 0 && <span>{openIssues} open issue{openIssues === 1 ? "" : "s"}</span>}
